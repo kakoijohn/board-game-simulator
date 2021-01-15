@@ -12,20 +12,34 @@ body {
   font-size: 1.2vw;
 }
 
-.table {
-  position: relative;
 
-  background: url('/resources/backgrounds/poker_table.svg');
-  background-size: cover;
+.ui_grid {
+  display: grid;
+  
+  height: 100%;
+  width: 100%;
+}
+
+.table_container {
+  position: fixed;
+  
+  width: 100%;
+  height: 100%;
+  
+  overflow: scroll;
+}
+
+.table {
+  background: url('/resources/backgrounds/table.svg');
+  background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
 
-  width: 100vw;
-  height: 50vw;
-
   margin: 0;
-  margin-bottom: 1vw;
   padding: 0;
+  
+  height: 3000px;
+  width: 3000px;
 
   user-select: none;
   -moz-user-select: none;
@@ -35,11 +49,11 @@ body {
 }
 
 .table__bg_0 {
-  background: url('/resources/backgrounds/poker_table.svg');
+  background: url('/resources/backgrounds/table.svg');
 }
 
 .table__bg_1 {
-  background: url('/resources/backgrounds/texas_holdem_table.svg');
+  background: url('/resources/backgrounds/table.svg');
 }
 
 .clear_scroll_bar {
@@ -253,7 +267,6 @@ body {
 
 .icon_grid {
   display: grid;
-  float: right;
   grid-template-rows: 4vw 4vw;
 }
 

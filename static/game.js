@@ -244,7 +244,7 @@ socket.on('new player confirmation', function(newPlayer) {
 	$('.loading_area').css('display', 'none');
   
   //set the current wallpaper
-  $('.table').addClass('table__bg_' + newPlayer.currentWallpaper);
+  // $('.table').addClass('table__bg_' + newPlayer.currentWallpaper);
 });
 
 socket.on('new player notification', function(info) {
