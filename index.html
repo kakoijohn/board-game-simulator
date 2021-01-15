@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <title>Cards with Friends!</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/login_screen_style.css">
+
+    <meta name="viewport" content="maximum-scale=1.0,user-scalable=0"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    
+    
+    <div class="display_name_form">
+      <div class="form_inner">
+        <label for="dname">Enter Your Name</label>
+        <input type="text" id="dname" name="dname" maxlength="20">
+        <label for="dcolor">Choose Your Favorite Color</label>
+        <div class="color_picker_container">
+          <div class="color_picker"></div>
+        </div>
+        <div class="name_submit_btn">Lets Go!</div>
+      </div>
+    </div>
+    
+    <div class="loading_area">
+      <div class="lds-ellipsis">Loading<div></div><div></div><div></div><div></div></div>
+    </div>
+    
+    
+    <div class="disconnected_screen" style="display: none;">
+      <h1 style="color: red;">Warning! Server Disconnected...</h1>
+      <h1 style="color: red;">Waiting for reconnect. Reload the page if nothing happens.</h1>
+    </div>
+    
+    
+    
+    <div class="table">
+      <canvas id="drawing_area" height="500" width="950"></canvas>
+    </div>
+
+    <div class="clear_scroll_bar" style="display: none;"></div>
+
+    <div class="deck_area">
+      <h2>Deck</h2>
+    </div>
+
+    <div class="chip_area" id="chip_1_holder">
+      <h4>0</h4>
+    </div>
+    <div class="chip_area" id="chip_5_holder">
+      <h4>0</h4>
+    </div>
+    <div class="chip_area" id="chip_25_holder">
+      <h4>0</h4>
+    </div>
+    <div class="chip_area" id="chip_50_holder">
+      <h4>0</h4>
+    </div>
+    <div class="chip_area" id="chip_100_holder">
+      <h4>0</h4>
+    </div>
+
+    <div class="icon_grid">
+      <div class="icon_row">
+        <div class="draw_icon" id="pointer_icon"></div>
+        <div class="draw_icon" id="pencil_icon"></div>
+        <div class="draw_icon" id="eraser_icon"></div>
+      </div>
+      <div class="icon_row">
+        <div class="draw_icon" id="wallpaper_icon"></div>
+        <div class="draw_icon" id="terminal_icon"></div>
+        <div class="draw_icon" id="question_icon"></div>
+      </div>
+    </div>
+
+    <div class="info_text_container">
+      <div class="info_text_exit">
+        <h1><strong>✖</strong></h1>
+      </div>
+      <div class="info_text">
+        <h1>Cards With Friends!</h1>
+        <h2>Created by: John Damits</h2>
+        <h5>Version: 1.5.0 Updated: 12/2/20</h5>
+        <h3>Objective: Have fun with friends over an online card table!</h3>
+        <p>Controls / Info:</p>
+        <ul>
+          <li>Click and drag cards to move them.</li>
+          <li>Double Click to reveal card to everyone (the card will flip RIGHT).</li>
+          <li>Right Click or Tap to peek card (only you can see, the card will flip UP with an outline).</li>
+          <li>Cards with an outline are currently being peeked by another player (outline color corresponds to player color).</li>
+          <li>Double Click eraser tool to clear all drawings.</li>
+          <li>Drag chips to the chip split / combine area and click button to make change.</li>
+          <li>Drag your nametag from underneath the "Deal" button to stake your claim on the table.</li>
+        </ul>
+        <p>New Features:</p>
+        <ul>
+          <li>Tanks! (WASD to move tank, Arrow Keys to move gun, spacebar to shoot your friends)</li>
+          <li>Chip splitter and combiner: to have less one dollar chips at the end of a poker round</li>
+          <li>Color picker: to make choosing your favorite color easier</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="terminal_container">
+      <div class="terminal_console" id="terminal_console"></div>
+      <div class="input_area_icon">>:</div>
+      <input type="text" id="console_input" name="console_input">
+      <div class="terminal_exit">✖</div>
+    </div>
+  </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="/static/game.js"></script>
+</html>

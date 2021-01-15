@@ -1,0 +1,178 @@
+.display_name_form {
+  position: fixed;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+}
+
+.display_name_form .form_inner {
+  position: relative;
+  display: table;
+
+  margin: 0 auto;
+  top: 10%;
+  vertical-align: middle;
+}
+
+.display_name_form .form_inner div {
+  text-align: center;
+  margin-top: 2vh;
+  width: 22em;
+}
+
+.display_name_form .form_inner input {
+  display: table;
+  margin: 0 auto;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+
+  padding: 3vh;
+  border-radius: 3vh;
+  border-width: 0.3vh;
+  border-style: solid;
+  border-color: black;
+
+  width: 100%;
+
+  text-align: center;
+}
+
+.display_name_form img {
+  position: relative;
+  margin: 0 auto;
+  display: block;
+  top: 10%;
+  width: 8vw;
+
+  transition: all 1s;
+}
+
+.display_name_form img:hover {
+  width: 70vw;
+}
+
+.display_name_form .name_submit_btn {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  vertical-align: middle;
+  text-align: center;
+
+  padding-top: 3vh;
+  padding-bottom: 3vh;
+
+  background-color: var(--btn-color);
+  border-radius: 3vh;
+
+  cursor: pointer;
+}
+
+.pickr {
+  width: 20em;
+  height: 5em;
+}
+
+.pcr-button, .pcr-button:before, .pcr-button:after {
+  content: none !important;
+  
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  
+  border-radius: 3vh !important;
+  border-style: solid;
+  border-color: black;
+  
+  margin: 0 !important;
+  padding: 0!important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+@media screen and (orientation:portrait) and (max-width: 992px) {
+  .display_name_form {
+    font-size: 5em;
+  }
+  
+  .display_name_form .form_inner input {
+    font-size: 1em;
+  }
+  
+  .display_name_form .form_inner div {
+    width: 90vw;
+  }
+    
+  .pcr-app {
+    transform: scale(3);
+  }
+}
+
+
+.loading_area {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 999;
+  background-color: white;
+  text-align: center;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  top: 40%;
+  width: 80px;
+  height: 80px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #000;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
