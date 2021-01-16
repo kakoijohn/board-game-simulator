@@ -40,6 +40,10 @@ body {
   
   height: 3000px;
   width: 3000px;
+  
+  transform-origin: top left;
+  transition: all 0.4s;
+  transform: scale(1.0);
 
   user-select: none;
   -moz-user-select: none;

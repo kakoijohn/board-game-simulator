@@ -256,11 +256,11 @@ socket.on('new player notification', function(info) {
 			$('body').append("<div class=\"player player_anim\" id=\"" + player.id +
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
 
-			// $('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">" + player.username +
-			// 						 "<div class=\"player_cash\"></div></div>");
+			$('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">" + player.username +
+									 "<div class=\"player_cash\"></div></div>");
       //
-			// $('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
-			// $('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
+			$('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
+			$('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
 		}
 
 		//toggle animation off for our cursor.
