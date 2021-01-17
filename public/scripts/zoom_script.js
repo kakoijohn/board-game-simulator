@@ -1,5 +1,4 @@
 const ele = document.getElementById('table_container');
-ele.style.cursor = 'grab';
 
 let pos = {
   top: 0,
@@ -9,7 +8,7 @@ let pos = {
 };
 
 const mouseDownHandler = function(e) {
-  ele.style.cursor = 'grabbing';
+  ele.style.cursor = 'move';
   ele.style.userSelect = 'none';
 
   pos = {
@@ -35,7 +34,7 @@ const mouseMoveHandler = function(e) {
 };
 
 const mouseUpHandler = function() {
-  ele.style.cursor = 'grab';
+  ele.style.cursor = 'default';
   ele.style.removeProperty('user-select');
 
   document.removeEventListener('mousemove', mouseMoveHandler);
@@ -46,10 +45,16 @@ const mouseUpHandler = function() {
 ele.addEventListener('mousedown', mouseDownHandler);
 
 
+
+
+// zoom events
+
+const defaultWidth = $('.table').css('width').replace('px', '');
+const defaultHeight = $('.table').css('height').replace('px', '');
+
 const zoomStep = 0.05;
 let zoomScale = 1;
 
-// zoom events
 const zoom = function(e) {
   if (e.deltaY == 0)
     return; // dont do anything if the delta didnt change
@@ -60,6 +65,9 @@ const zoom = function(e) {
   
   // set the zoom scale of the table
   $('.table').css('transform', 'scale(' + zoomScale + ')');
+  
+  $('.table_spacer').css('width', (defaultWidth * zoomScale) + 'px');
+  $('.table_spacer').css('height', (defaultHeight * zoomScale) + 'px');
 }
 
 const disableScrollWheel = function() {

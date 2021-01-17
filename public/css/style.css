@@ -2,6 +2,9 @@
   --primary-color: greenyellow;
   --secondary-color: steelblue;
   --btn-color: orange;
+  
+  --table-width: 3000px;
+  --table-height: 3000px;
 }
 
 body {
@@ -27,20 +30,24 @@ body {
   height: 100%;
   
   overflow: scroll;
-  cursor: grab;
+  cursor: default;
 }
 
 .table {
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  height: var(--table-height);
+  width: var(--table-width);
+  
   background: url('/resources/backgrounds/table.svg');
   background-size: 100%;
-  background-position: center;
+  background-position: contain;
   background-repeat: no-repeat;
 
   margin: 0;
   padding: 0;
-  
-  height: 3000px;
-  width: 3000px;
   
   transform-origin: top left;
   transition: all 0.4s;
@@ -53,12 +60,36 @@ body {
   -o-user-select: none;
 }
 
+.table_spacer {
+  content: '';
+  position: relative;
+  z-index: -1;
+  height: var(--table-height);
+  width: var(--table-width);
+}
+
 .table__bg_0 {
   background: url('/resources/backgrounds/table.svg');
 }
 
 .table__bg_1 {
   background: url('/resources/backgrounds/table.svg');
+}
+
+.test_block {
+  position: absolute;
+  
+  height: 50px;
+  width: 50px;
+  
+  background-color: blue;
+  
+  top: 1500px;
+  left: 1500px;
+}
+
+.test_block:hover {
+  cursor: pointer;
 }
 
 .clear_scroll_bar {
