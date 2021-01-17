@@ -1,9 +1,71 @@
-function noScroll() {
-  $('.table_container').scrollTo(0, 0);
-}
-// add listener to disable scroll
-$('.table_container').addEventListener('scroll', noScroll);
+const ele = document.getElementById('table_container');
+ele.style.cursor = 'grab';
 
-$('.table_container').scroll(function() {
+let pos = {
+  top: 0,
+  left: 0,
+  x: 0,
+  y: 0
+};
+
+const mouseDownHandler = function(e) {
+  ele.style.cursor = 'grabbing';
+  ele.style.userSelect = 'none';
+
+  pos = {
+    left: ele.scrollLeft,
+    top: ele.scrollTop,
+    // Get the current mouse position
+    x: e.clientX,
+    y: e.clientY,
+  };
+
+  document.addEventListener('mousemove', mouseMoveHandler);
+  document.addEventListener('mouseup', mouseUpHandler);
+};
+
+const mouseMoveHandler = function(e) {
+  // How far the mouse has been moved
+  const dx = e.clientX - pos.x;
+  const dy = e.clientY - pos.y;
+
+  // Scroll the element
+  ele.scrollTop = pos.top - dy;
+  ele.scrollLeft = pos.left - dx;
+};
+
+const mouseUpHandler = function() {
+  ele.style.cursor = 'grab';
+  ele.style.removeProperty('user-select');
+
+  document.removeEventListener('mousemove', mouseMoveHandler);
+  document.removeEventListener('mouseup', mouseUpHandler);
+};
+
+// Attach the handler
+ele.addEventListener('mousedown', mouseDownHandler);
+
+
+const zoomStep = 0.05;
+let zoomScale = 1;
+
+// zoom events
+const zoom = function(e) {
+  if (e.deltaY == 0)
+    return; // dont do anything if the delta didnt change
   
-});
+  let direction = e.deltaY / Math.abs(e.deltaY);
+  
+  zoomScale -= (direction * zoomStep);
+  
+  // set the zoom scale of the table
+  $('.table').css('transform', 'scale(' + zoomScale + ')');
+}
+
+const disableScrollWheel = function() {
+  return false;
+}
+
+// attach handlers
+ele.addEventListener('wheel', zoom);
+ele.onwheel = disableScrollWheel;
