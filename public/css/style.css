@@ -23,7 +23,7 @@ body {
   width: 100%;
 }
 
-.table_container {
+#table_container {
   position: fixed;
   
   width: 100%;
@@ -33,7 +33,7 @@ body {
   cursor: default;
 }
 
-.table {
+#table {
   position: absolute;
   top: 0;
   left: 0;
@@ -60,7 +60,7 @@ body {
   -o-user-select: none;
 }
 
-.table_spacer {
+#table_spacer {
   content: '';
   position: relative;
   z-index: -1;
@@ -76,11 +76,11 @@ body {
   background: url('/resources/backgrounds/table.svg');
 }
 
-.test_block {
+#test_block {
   position: absolute;
   
-  height: 50px;
-  width: 50px;
+  height: 100px;
+  width: 100px;
   
   background-color: blue;
   
@@ -88,7 +88,7 @@ body {
   left: 1500px;
 }
 
-.test_block:hover {
+#test_block:hover {
   cursor: pointer;
 }
 

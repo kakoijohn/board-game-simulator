@@ -289,8 +289,19 @@ Game Vars
 
 **/
 
-var drawing;
-var cursorMode;
+let drawing;
+let cursorMode;
+
+let targetEntity = {
+  active: false,
+  id: '',
+  x: 0,
+  y: 0,
+  offsetX: 0,
+  offsetY: 0,
+  released: true,
+  targetAtTop: false
+}
 
 /**
 
@@ -299,37 +310,22 @@ Player Mouse Events
 **/
 
 
-$(document).on('mousedown', '.floating_nametag', function(evt) {
+$(document).on('mousedown', '.entity', function(evt) {
 	if (evt.which == 1) {
 		//left click event
-		draggingNametag = true;
-		draggingChip = false;
-    draggingDealerChip = false;
-		draggingCard = false;
-		drawing = false;
-    draggingTank = false;
+    targetEntity.id = $(evt.target).attr('id');
 
-		targetNametag.released = false;
-
-		offsetX = evt.pageX - $(evt.target).offset().left;
-		offsetY = evt.pageY - $(evt.target).offset().top;
-
-		var targetNametagID = $(evt.target).attr('id');
-		if (targetNametagID == undefined)
-			targetNametagID = $(evt.target).parent().attr('id');
-
-		targetNametag.nametagID = targetNametagID;
+		targetEntity.offsetX = evt.pageX - $(evt.target).offset().left;
+		targetEntity.offsetY = evt.pageY - $(evt.target).offset().top;
+    
+    socket.emit('pickup entity', {username: playerInfo.username, targetEntity: targetEntity});
 	}
 });
 
 $(document).on('mousedown', '#drawing_area', function(evt) {
 	if (evt.which == 1 && (cursorMode == 'pencil' || cursorMode == 'eraser')) {
 		drawing = true;
-		draggingCard = false;
-		draggingChip = false;
-		draggingNametag = false;
-    draggingTank = false;
-
+    
 		prevDrawPointX = evt.pageX / canvas.width;
 		prevDrawPointY = evt.pageY / canvas.height;
 	}
@@ -341,6 +337,23 @@ $(document).on('touchstart', '#drawing_area', function(evt) {
 });
 
 $(window).mousemove(function (evt) {
+  if (targetEntity.active) {
+		targetEntity.x = ((evt.pageX - targetEntity.offsetX) / 3000 * 100);
+		targetEntity.y = ((evt.pageY - targetEntity.offsetY) / 3000 * 100);
+
+		//move the card locally on our screen before sending the data to the server.
+		$('#' + targetEntity.id).css('left', targetEntity.x + 'px');
+		$('#' + targetEntity.id).css('top', targetEntity.y + 'px');
+		//next send the card state to the server.
+		socket.emit('move entity', targetEntity);
+
+		if (!targetEntity.targetAtTop) {
+			//bring the clicked card to the front.
+			socket.emit('target entity to top', targetEntity.id);
+      targetEntity.targetAtTop = true;
+		}
+
+	}
 	//move player cursor indicator
 	playerInfo.pointerX = evt.pageX / tableWidth;
 	playerInfo.pointerY = evt.pageY / tableHeight;
@@ -352,7 +365,10 @@ $(window).mousemove(function (evt) {
 });
 
 $(window).mouseup(function(evt) {
-	if (drawing) {
+  if (targetEntity.active) {
+    targetEntity.active = false;
+    
+  } else if (drawing) {
 		var data = {fromX: prevDrawPointX, fromY: prevDrawPointY,
 			toX: evt.pageX / canvas.width, toY: evt.pageY / canvas.height,
 			playerID: playerInfo.id, color: playerInfo.color, mode: cursorMode}
@@ -456,10 +472,9 @@ socket.on('state', function(param) {
 
 });
 
-//if we recieve confirmation from the server that we can move the chip, set the state to dragging.
-socket.on('pickup confirmation', function(targetPickupChip) {
-	if (targetPickupChip.id == targetChip.id)
-		draggingChipConfirm = true;
+// if we recieve confirmation that we picked up the entity
+socket.on('pickup entity confirm', function() {
+  targetEntity.active = true;
 });
 
 //listen for reset chip call from server

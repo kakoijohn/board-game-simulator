@@ -8,6 +8,11 @@ let pos = {
 };
 
 const mouseDownHandler = function(e) {
+  if (e.target.id != 'drawing_area')
+    // prevent the table drag event if we click on anything other than the drawing area
+    // ie: if we click on an entity instead
+    return;
+  
   ele.style.cursor = 'move';
   ele.style.userSelect = 'none';
 
@@ -49,11 +54,11 @@ ele.addEventListener('mousedown', mouseDownHandler);
 
 // zoom events
 
-const defaultWidth = $('.table').css('width').replace('px', '');
-const defaultHeight = $('.table').css('height').replace('px', '');
+const defaultWidth = $('#table').css('width').replace('px', '');
+const defaultHeight = $('#table').css('height').replace('px', '');
 
 const zoomStep = 0.05;
-let zoomScale = 1;
+var zoomScale = 1;
 
 const zoom = function(e) {
   if (e.deltaY == 0)
@@ -64,10 +69,10 @@ const zoom = function(e) {
   zoomScale -= (direction * zoomStep);
   
   // set the zoom scale of the table
-  $('.table').css('transform', 'scale(' + zoomScale + ')');
+  $('#table').css('transform', 'scale(' + zoomScale + ')');
   
-  $('.table_spacer').css('width', (defaultWidth * zoomScale) + 'px');
-  $('.table_spacer').css('height', (defaultHeight * zoomScale) + 'px');
+  $('#table_spacer').css('width', (defaultWidth * zoomScale) + 'px');
+  $('#table_spacer').css('height', (defaultHeight * zoomScale) + 'px');
 }
 
 const disableScrollWheel = function() {

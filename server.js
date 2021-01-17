@@ -27,6 +27,7 @@ server.listen(PORT, function() {
 });
 
 var players = {};
+var entities = {};
 
 var currentWallpaper = 0; // 0 for default wallpaper
 
@@ -83,6 +84,15 @@ io.on('connection', function(socket) {
       playerStateChanged = true;
   	}
   });
+  
+  socket.on('pickup entity', function(info) {
+    // if (entities[info.targetEntity.id] != undefined && players[info.username] != undefined) {
+    //   if (userPermissionToMove(info.username, info.targetEntity.id)) {
+    //     let entity = entities[info.targetEntity.id];
+        socket.emit('pickup entity confirm');
+    //   }
+    // }
+  });
 
   socket.on('new draw line', function(data) {
   	io.sockets.emit('new draw line', data);
@@ -98,6 +108,11 @@ io.on('connection', function(socket) {
     socket.emit('console response', response);
   });
 });
+
+// TODO features for user to have permission to move entity
+function userPermissionToMove(username, entityID) {
+  return true; //TODO
+}
 
 //emit the state of the deck every 24ms if something changed.
 setInterval(function() {
