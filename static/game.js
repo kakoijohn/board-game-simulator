@@ -314,11 +314,17 @@ $(document).on('mousedown', '.entity', function(evt) {
 	if (evt.which == 1) {
 		//left click event
     targetEntity.id = $(evt.target).attr('id');
-
+    
 		targetEntity.offsetX = evt.pageX - $(evt.target).offset().left;
 		targetEntity.offsetY = evt.pageY - $(evt.target).offset().top;
     
-    socket.emit('pickup entity', {username: playerInfo.username, targetEntity: targetEntity});
+    let mouseX = ($('#table_container').scrollLeft() + evt.pageX) / (defaultWidth  * zoomScale) * defaultWidth;
+    let mouseY = ($('#table_container').scrollTop()  + evt.pageY) / (defaultHeight * zoomScale) * defaultWidth;
+    
+    console.log(mouseX);
+    console.log(mouseY);
+    
+    // socket.emit('pickup entity', {username: playerInfo.username, targetEntity: targetEntity});
 	}
 });
 
