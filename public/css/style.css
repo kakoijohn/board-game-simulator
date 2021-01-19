@@ -11,16 +11,8 @@ body {
   margin: 0;
   padding: 0;
 
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'ff-brokenscript-web', 'Josefin Sans', sans-serif;
   font-size: 1.2vw;
-}
-
-
-.ui_grid {
-  display: grid;
-  
-  height: 100%;
-  width: 100%;
 }
 
 #table_container {
@@ -89,17 +81,11 @@ body {
 }
 
 #test_block:hover {
-  cursor: pointer;
+  cursor: grab;
 }
 
-.clear_scroll_bar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 3vw;
-  height: 50vw;
-
-  background-color: transparent;
+#test_block:active {
+  cursor: grabbing;
 }
 
 #drawing_area {
@@ -270,17 +256,30 @@ body {
   font-size: 1.25vw;
 }
 
+.ui_grid {
+  display: grid;
+  
+  height: 100%;
+  width: 100%;
+  
+  grid-template-columns: 5vh 10vh 0.1fr 1fr 1fr 1fr 5vh;
+  grid-template-rows: 10vh 1fr 10vh 20px;
+  
+  grid-template-areas:
+    ". header header header header header ."
+    ". . . . . . ."
+    ". tiles . hand hand tools ."
+    ". . . . . . .";
+}
+
 .deck_area {
-  position: absolute;
-  top: 51vw;
-  left: 32.5vw;
-  width: 9vw;
-  height: 12vw;
-  margin-right: 1vw;
+  z-index: 100;
+  
+  padding-right: 1vh;
   vertical-align: top;
 
   background-color: var(--secondary-color);
-  border-radius: 0.9vw;
+  border-radius: 0.5vw;
 
   user-select: none;
   -moz-user-select: none;
@@ -303,12 +302,37 @@ body {
 
 .icon_grid {
   display: grid;
-  grid-template-rows: 4vw 4vw;
+  z-index: 100;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "icon_row_1"
+    "icon_row_2";
 }
 
 .icon_row {
-  margin-right: 1vw;
-  float: right;
+  
+}
+
+#ui_tiles {
+  grid-area: tiles;
+  
+  width: 0.5fr;
+}
+
+#ui_hand {
+  grid-area: hand;
+}
+
+#ui_tools {
+  grid-area: tools;
+}
+
+#icon_row_1 {
+  grid-area: icon_row_1;
+}
+
+#icon_row_2 {
+  grid-area: icon_row_2;
 }
 
 .draw_icon {
@@ -316,11 +340,10 @@ body {
   vertical-align: top;
   height: 2vw;
   width: 2vw;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  margin-left: 3px;
-  margin-right: 3px;
+  margin-bottom: 10px;
+  margin-left: 10px;
   padding: 5px;
+  float: right;
 
   background-color: var(--btn-color) !important;
   background-size: 2vw !important;
@@ -330,20 +353,6 @@ body {
   border-radius: 5px;
 
   cursor: pointer;
-}
-
-.empty_icon {
-  display: inline-block;
-  vertical-align: top;
-  height: 2vw;
-  width: 2vw;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  margin-left: 3px;
-  margin-right: 3px;
-  padding: 5px;
-  
-  background-color: transparent;
 }
 
 #pointer_icon {

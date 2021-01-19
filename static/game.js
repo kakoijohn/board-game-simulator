@@ -299,7 +299,7 @@ let targetEntity = {
   y: 0,
   offsetX: 0,
   offsetY: 0,
-  released: true,
+  gridSpacing: 0,
   targetAtTop: false
 }
 
@@ -315,16 +315,10 @@ $(document).on('mousedown', '.entity', function(evt) {
 		//left click event
     targetEntity.id = $(evt.target).attr('id');
     
-		targetEntity.offsetX = evt.pageX - $(evt.target).offset().left;
-		targetEntity.offsetY = evt.pageY - $(evt.target).offset().top;
+		targetEntity.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
+		targetEntity.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
     
-    let mouseX = ($('#table_container').scrollLeft() + evt.pageX) / (defaultWidth  * zoomScale) * defaultWidth;
-    let mouseY = ($('#table_container').scrollTop()  + evt.pageY) / (defaultHeight * zoomScale) * defaultWidth;
-    
-    console.log(mouseX);
-    console.log(mouseY);
-    
-    // socket.emit('pickup entity', {username: playerInfo.username, targetEntity: targetEntity});
+    socket.emit('pickup entity', {username: playerInfo.username, entityID: targetEntity.id});
 	}
 });
 
@@ -344,14 +338,30 @@ $(document).on('touchstart', '#drawing_area', function(evt) {
 
 $(window).mousemove(function (evt) {
   if (targetEntity.active) {
-		targetEntity.x = ((evt.pageX - targetEntity.offsetX) / 3000 * 100);
-		targetEntity.y = ((evt.pageY - targetEntity.offsetY) / 3000 * 100);
+    let scrollLeft = $('#table_container').scrollLeft();
+    let scrollTop  = $('#table_container').scrollTop();
+    
+    let tableMouseX = (scrollLeft + evt.pageX) / (defaultWidth  * zoomScale) * defaultWidth;
+    let tableMouseY = (scrollTop  + evt.pageY) / (defaultHeight * zoomScale) * defaultWidth;
+    
+		targetEntity.x = tableMouseX - targetEntity.offsetX; //TODO offset
+		targetEntity.y = tableMouseY - targetEntity.offsetY;
+    
+    if (targetEntity.gridSpacing > 0) {
+      targetEntity.x = Math.round(targetEntity.x / targetEntity.gridSpacing) * targetEntity.gridSpacing;
+      targetEntity.y = Math.round(targetEntity.y / targetEntity.gridSpacing) * targetEntity.gridSpacing;
+    }
 
 		//move the card locally on our screen before sending the data to the server.
 		$('#' + targetEntity.id).css('left', targetEntity.x + 'px');
 		$('#' + targetEntity.id).css('top', targetEntity.y + 'px');
 		//next send the card state to the server.
-		socket.emit('move entity', targetEntity);
+		socket.emit('move entity', {
+      username: playerInfo.username,
+      entityID: targetEntity.id,
+      x: targetEntity.x,
+      y: targetEntity.y
+    });
 
 		if (!targetEntity.targetAtTop) {
 			//bring the clicked card to the front.
@@ -474,13 +484,14 @@ Listen for the sever for states of the deck, chips, and other players.
 **/
 
 //listen for the state of the table from server
-socket.on('state', function(param) {
-
+socket.on('entity state', function(entities) {
+  
 });
 
 // if we recieve confirmation that we picked up the entity
-socket.on('pickup entity confirm', function() {
+socket.on('pickup entity confirm', function(gridSpacing) {
   targetEntity.active = true;
+  targetEntity.gridSpacing = gridSpacing;
 });
 
 //listen for reset chip call from server

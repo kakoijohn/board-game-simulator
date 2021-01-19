@@ -19,6 +19,9 @@ app.use(express.static('public'));
 // Routing
 app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
+  
+  console.log('generating default entities');
+  generateDefaultEntities();
 });
 
 // Starts the server.
@@ -28,6 +31,9 @@ server.listen(PORT, function() {
 
 var players = {};
 var entities = {};
+
+let playerStateChange = false;
+let entityStateChange = false;
 
 var currentWallpaper = 0; // 0 for default wallpaper
 
@@ -74,6 +80,9 @@ io.on('connection', function(socket) {
     io.sockets.emit('new player notification', players);
 
     console.log("Added new player with username: " + id);
+    
+    playerStateChange = true;
+    entityStateChange = true;
   });
 
   socket.on('broadcast player state', function(playerInfo) {
@@ -81,17 +90,27 @@ io.on('connection', function(socket) {
 	  	players[playerInfo.id].pointerX = playerInfo.pointerX;
 	  	players[playerInfo.id].pointerY = playerInfo.pointerY;
 
-      playerStateChanged = true;
+      playerStateChange = true;
   	}
   });
   
   socket.on('pickup entity', function(info) {
-    // if (entities[info.targetEntity.id] != undefined && players[info.username] != undefined) {
-    //   if (userPermissionToMove(info.username, info.targetEntity.id)) {
-    //     let entity = entities[info.targetEntity.id];
-        socket.emit('pickup entity confirm');
-    //   }
-    // }
+    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
+      if (userHasPermissionToMove(info.username, info.entityID)) {
+        socket.emit('pickup entity confirm', entities[info.entityID].gridSpacing);
+      }
+    }
+  });
+  
+  socket.on('move entity', function(info) {
+    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
+      if (userHasPermissionToMove(info.username, info.entityID)) {
+        entities[info.entityID].x = info.x;
+        entities[info.entityID].y = info.y;
+      }
+    }
+    
+    entityStateChange = true;
   });
 
   socket.on('new draw line', function(data) {
@@ -109,17 +128,28 @@ io.on('connection', function(socket) {
   });
 });
 
-// TODO features for user to have permission to move entity
-function userPermissionToMove(username, entityID) {
-  return true; //TODO
+function userHasPermissionToMove(username, entityID) {
+  if (entities[entityID].requireAdmin) {
+    if (players[username].isAdmin) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
 }
 
 //emit the state of the deck every 24ms if something changed.
 setInterval(function() {
-  // if (statechanged) {
-  //   io.sockets.emit('state change', info);
-  //   stateChanged = false;
-  // }
+  if (playerStateChange) {
+    io.sockets.emit('player state', players);
+    playerStateChange = false;
+  }
+  if (entityStateChange) {
+    io.sockets.emit('entity state', entities);
+    entityStateChange = false;
+  }
 }, 1000 / 24);
 
 //emit the state every ten seconds regardless of change.
@@ -129,6 +159,17 @@ setInterval(function() {
   // io.sockets.emit('player state', players);
   // io.sockets.emit('player vehicle state', playerVehicles);
 }, 5000);
+
+function generateDefaultEntities() {
+  entities['test_block'] = {
+    active: false,
+    id: 'test_block',
+    x: 0,
+    y: 0,
+    gridSpacing: 100,
+    requireAdmin: false
+  }
+}
 
 const serverPassword = 'hackermikecarns';
 
@@ -154,7 +195,7 @@ function consolecmd(text, source, id) {
       if (players[playerID] != undefined) {
         delete players[playerID];
         io.sockets.emit('remove user', playerID);
-        playerStateChanged = true;
+        playerStateChange = true;
         response = "Removing user: " + playerID;
       } else {
         response = "Error: Invalid payout command. playerID not found.";

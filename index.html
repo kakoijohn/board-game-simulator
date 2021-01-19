@@ -1,8 +1,9 @@
 <html>
   <head>
-    <title>Cards with Friends!</title>
+    <title>Carcassonne!</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/tdw1aea.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/login_screen_style.css">
@@ -18,13 +19,13 @@
     
     <div class="display_name_form">
       <div class="form_inner">
-        <label for="dname">Enter Your Name</label>
+        <label for="dname">Enter Deine Namen</label>
         <input type="text" id="dname" name="dname" maxlength="20">
-        <label for="dcolor">Choose Your Favorite Color</label>
+        <label for="dcolor">Choose Deine Favorite Color</label>
         <div class="color_picker_container">
           <div class="color_picker"></div>
         </div>
-        <div class="name_submit_btn">Lets Go!</div>
+        <div class="name_submit_btn">Spielen!</div>
       </div>
     </div>
     
@@ -47,42 +48,28 @@
       </div>
     </div>
     
-    <!-- <div class="ui_grid">
-      <div class="clear_scroll_bar" style="display: none;"></div>
+    <div class="ui_grid">
   
-      <div class="deck_area">
-        <h2>Deck</h2>
+      <div class="deck_area" id="ui_tiles">
+        <h2>Tiles</h2>
       </div>
-  
-      <div class="chip_area" id="chip_1_holder">
-        <h4>0</h4>
-      </div>
-      <div class="chip_area" id="chip_5_holder">
-        <h4>0</h4>
-      </div>
-      <div class="chip_area" id="chip_25_holder">
-        <h4>0</h4>
-      </div>
-      <div class="chip_area" id="chip_50_holder">
-        <h4>0</h4>
-      </div>
-      <div class="chip_area" id="chip_100_holder">
-        <h4>0</h4>
+      <div class="deck_area" id="ui_hand">
+        <h2>Meine Hand</h2>
       </div>
   
-      <div class="icon_grid">
-        <div class="icon_row">
-          <div class="draw_icon" id="pointer_icon"></div>
-          <div class="draw_icon" id="pencil_icon"></div>
+      <div class="icon_grid" id="ui_tools">
+        <div class="icon_row" id="icon_row_1">
           <div class="draw_icon" id="eraser_icon"></div>
+          <div class="draw_icon" id="pencil_icon"></div>
+          <div class="draw_icon" id="pointer_icon"></div>
         </div>
-        <div class="icon_row">
-          <div class="draw_icon" id="wallpaper_icon"></div>
-          <div class="draw_icon" id="terminal_icon"></div>
+        <div class="icon_row" id="icon_row_2">
           <div class="draw_icon" id="question_icon"></div>
+          <div class="draw_icon" id="terminal_icon"></div>
+          <div class="draw_icon" id="wallpaper_icon"></div>
         </div>
       </div>
-    </div> -->
+    </div>
     
     <div class="info_text_container">
       <div class="info_text_exit">
