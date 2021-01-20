@@ -162,8 +162,9 @@ setInterval(function() {
 
 function generateDefaultEntities() {
   entities['test_block'] = {
-    active: false,
     id: 'test_block',
+    active: false,
+    onTable: false,
     x: 0,
     y: 0,
     gridSpacing: 100,
