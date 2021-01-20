@@ -23,6 +23,8 @@ body {
   
   overflow: scroll;
   cursor: default;
+  
+  touch-action: none;
 }
 
 #table {
@@ -37,6 +39,7 @@ body {
   background-size: 100%;
   background-position: contain;
   background-repeat: no-repeat;
+  
 
   margin: 0;
   padding: 0;
@@ -44,7 +47,8 @@ body {
   transform-origin: top left;
   transition: all 0.4s;
   transform: scale(1.0);
-
+  
+  touch-action: none;
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -78,6 +82,8 @@ body {
   
   top: 1500px;
   left: 1500px;
+  
+  z-index: 1000;
 }
 
 #test_block:hover {
@@ -92,6 +98,7 @@ body {
   height: 100%;
   width: 100%;
 
+  touch-action: none;
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -275,7 +282,6 @@ body {
 .deck_area {
   z-index: 100;
   
-  padding-right: 1vh;
   vertical-align: top;
 
   background-color: var(--secondary-color);
