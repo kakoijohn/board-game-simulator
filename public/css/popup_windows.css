@@ -1,0 +1,133 @@
+.terminal_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 50vh;
+  width: 50vw;
+  margin-left: 25vw;
+  margin-top: 10vh;
+  
+  background-color: #292828;
+  border-style: solid;
+  border-color: black;
+  color: white;
+  
+  font-family: Menlo, Consolas, DejaVu Sans Mono, monospace;
+  
+  z-index: -100;
+  opacity: 0;
+  
+  transition: all 1s;
+}
+
+.terminal_container__active {
+  z-index: 4000;
+  opacity: 1;
+}
+
+.terminal_console {
+  overflow-y: auto;
+  
+  width: 97%;
+  height: 90%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  
+  font-size: 0.8em;
+}
+
+.terminal_container .input_area_icon {
+  display: inline-block;
+  
+  width: 3%;
+  height: 5%;
+  padding: 0;
+  margin-left: 1%;
+}
+
+.terminal_container #console_input {
+  display: inline-block;
+  
+  width: 90%;
+  height: 5%;
+  margin-top: 1%;
+  
+  color: white;
+  background-color: #212020;
+  border-style: none;
+  
+  font-family: Menlo, Consolas, DejaVu Sans Mono, monospace;
+  font-size: 0.8em;
+}
+
+.terminal_exit {
+  display: inline-block;
+  
+  width: 3%;
+  height: 5%;
+  padding: 0;
+  
+  color: red;
+  
+  cursor: pointer;
+}
+
+.info_text_container {
+  position: fixed;
+  
+  top: 0;
+  left: 0;
+  height: 80vh;
+  width: 80vw;
+  margin-left: 10vw;
+  margin-top: 10vh;
+  overflow-y:auto;
+  
+  background-color: white;
+  border-radius: 10px;
+  border-color: var(--btn-color);
+  border-style: solid;
+  
+  z-index: -100;
+  opacity: 0;
+  
+  transition: all 1s;
+}
+
+.info_text_container__active {
+  z-index: 5000;
+  opacity: 1;
+}
+
+.info_text_exit {
+  float: right;
+  color: red;
+  
+  margin: 0.5%;
+  line-height: 0;
+  
+  cursor: pointer;
+}
+
+.info_text {
+  display: block;
+  margin-left: 1vw;
+  margin-top: 1vw;
+
+  margin-bottom: 10px;
+}
+
+.disconnected_screen {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: var(--login-z-index);
+  background-color: #ffffff80;
+  text-align: center;
+}
+
+.disconnected_screen h1 {
+  position: relative;
+  top: 25%;
+}

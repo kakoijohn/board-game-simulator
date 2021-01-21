@@ -293,15 +293,20 @@ let drawing;
 let cursorMode;
 
 let targetEntity = {
-  active: false,
   id: '',
   x: 0,
   y: 0,
   offsetX: 0,
   offsetY: 0,
+  active: false,
   gridSpacing: 0,
-  targetAtTop: false
+  isGlobalObject: false,
+  isOverInventory: false,
 }
+
+const tableZIndex = 1;
+const activeZIndex = 999;
+const inventoryZIndex = 1001;
 
 /**
 
@@ -347,9 +352,15 @@ $(window).mousemove(function (evt) {
 		targetEntity.x = tableMouseX - targetEntity.offsetX; //TODO offset
 		targetEntity.y = tableMouseY - targetEntity.offsetY;
     
-    if (targetEntity.gridSpacing > 0) {
+    if (targetEntity.gridSpacing > 0 && !targetEntity.isOverInventory) {
       targetEntity.x = Math.round(targetEntity.x / targetEntity.gridSpacing) * targetEntity.gridSpacing;
       targetEntity.y = Math.round(targetEntity.y / targetEntity.gridSpacing) * targetEntity.gridSpacing;
+    }
+    
+    if (targetEntity.isOverInventory) {
+      $('#' + targetEntity.id).css('transform', 'translateZ(10px)');
+    } else {
+      // $('#' + targetEntity.id).css('transform', 'translateZ(0)');
     }
 
 		//move the card locally on our screen before sending the data to the server.
@@ -363,12 +374,6 @@ $(window).mousemove(function (evt) {
       y: targetEntity.y
     });
 
-		if (!targetEntity.targetAtTop) {
-			//bring the clicked card to the front.
-			socket.emit('target entity to top', targetEntity.id);
-      targetEntity.targetAtTop = true;
-		}
-
 	}
 	//move player cursor indicator
 	playerInfo.pointerX = evt.pageX / tableWidth;
@@ -380,14 +385,37 @@ $(window).mousemove(function (evt) {
 	playerInfo.stateChanged = true;
 });
 
+$(document).on('mouseover', '#ui_tiles', function(evt) {
+  if (targetEntity.active && targetEntity.isGlobalObject) {
+    targetEntity.isOverInventory = true;
+  }
+});
+
+$(document).on('mouseleave', '#ui_tiles', function(evt) {
+  if (targetEntity.isOverInventory) {
+    targetEntity.isOverInventory = false;
+  }
+});
+
 $(window).mouseup(function(evt) {
   if (targetEntity.active) {
+    if (targetEntity.isOverInventory) {
+      socket.emit('entity to inventory', {
+        username: playerInfo.id,
+        entityID: targetEntity.id
+      });
+    }
     targetEntity.active = false;
-    
   } else if (drawing) {
-		var data = {fromX: prevDrawPointX, fromY: prevDrawPointY,
-			toX: evt.pageX / canvas.width, toY: evt.pageY / canvas.height,
-			playerID: playerInfo.id, color: playerInfo.color, mode: cursorMode}
+		var data = {
+      fromX: prevDrawPointX,
+      fromY: prevDrawPointY,
+			toX: evt.pageX / canvas.width,
+      toY: evt.pageY / canvas.height,
+			playerID: playerInfo.id,
+      color: playerInfo.color,
+      mode: cursorMode
+    }
 
 		//draw on our own cavas first
 		drawOnCanvas(data);
@@ -396,70 +424,6 @@ $(window).mouseup(function(evt) {
 
 		drawing = false;
 	}
-});
-
-$('#ui_tiles').on('mouseover', function(evt) {
-  if (targetEntity.active) {
-    console.log('mouse over active');
-  }
-});
-
-/**
-
-Player Button Events
-
-**/
-
-$(document).on('click', '#pointer_icon', function(evt) {
-	$('#pointer_icon').css('box-shadow', '0px 0px 0px 0.2vw ' + playerInfo.color);
-	$('#pencil_icon').css('box-shadow', '');
-	$('#eraser_icon').css('box-shadow', '');
-
-	cursorMode = 'pointer';
-	$('#drawing_area').css('cursor', 'default');
-	$('.table').css('touch-action', 'auto');
-	$('.clear_scroll_bar').css('display', 'none');
-});
-$(document).on('click', '#pencil_icon', function(evt) {
-	$('#pencil_icon').css('box-shadow', '0px 0px 0px 0.2vw ' + playerInfo.color);
-	$('#pointer_icon').css('box-shadow', '');
-	$('#eraser_icon').css('box-shadow', '');
-
-	cursorMode = 'pencil';
-	$('#drawing_area').css('cursor', 'url(\'/resources/icons/pencil.png\'), crosshair');
-	$('.table').css('touch-action', 'none');
-	$('.clear_scroll_bar').css('display', 'block');
-});
-$(document).on('click', '#eraser_icon', function(evt) {
-	$('#eraser_icon').css('box-shadow', '0px 0px 0px 0.2vw ' + playerInfo.color);
-	$('#pointer_icon').css('box-shadow', '');
-	$('#pencil_icon').css('box-shadow', '');
-
-	cursorMode = 'eraser';
-	$('#drawing_area').css('cursor', 'url(\'/resources/icons/eraser.png\'), cell');
-	$('.table').css('touch-action', 'none');
-	$('.clear_scroll_bar').css('display', 'block');
-});
-$(document).on('dblclick', '#eraser_icon', function(evt) {
-	socket.emit('clear draw area');
-});
-
-$(document).on('click', '#question_icon', function(evt) {
-  $('.info_text_container').toggleClass('info_text_container__active', true);
-});
-$(document).on('click', '.info_text_exit', function(evt) {
-  $('.info_text_container').toggleClass('info_text_container__active', false);
-});
-
-$(document).on('click', '#terminal_icon', function(evt) {
-  $('.terminal_container').toggleClass('terminal_container__active', true);
-  $('#console_input').focus();
-});
-$(document).on('click', '.terminal_exit', function(evt) {
-  $('.terminal_container').toggleClass('terminal_container__active', false);
-});
-$(document).on('click', '#wallpaper_icon', function(evt) {
-  socket.emit('cycle wallpaper');
 });
 
 
@@ -495,9 +459,11 @@ socket.on('entity state', function(entities) {
 });
 
 // if we recieve confirmation that we picked up the entity
-socket.on('pickup entity confirm', function(gridSpacing) {
+socket.on('pickup entity confirm', function(info) {
   targetEntity.active = true;
-  targetEntity.gridSpacing = gridSpacing;
+  targetEntity.gridSpacing = info.gridSpacing;
+  targetEntity.isGlobalObject = info.isGlobalObject;
+  $('#' + targetEntity.id).css('z-index', activeZIndex);
 });
 
 //listen for reset chip call from server

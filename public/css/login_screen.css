@@ -1,6 +1,6 @@
 .display_name_form {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--login-z-index);
   height: 100%;
   width: 100%;
   background-color: white;
@@ -115,7 +115,7 @@
   position: fixed;
   height: 100%;
   width: 100%;
-  z-index: 999;
+  z-index: calc(var(--login-z-index) - 1);
   background-color: white;
   text-align: center;
 }

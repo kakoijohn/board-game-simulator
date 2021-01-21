@@ -19,14 +19,14 @@ app.use(express.static('public'));
 // Routing
 app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
-  
-  console.log('generating default entities');
-  generateDefaultEntities();
 });
 
 // Starts the server.
 server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
+  
+  console.log('generating default entities');
+  generateDefaultEntities();
 });
 
 var players = {};
@@ -96,21 +96,33 @@ io.on('connection', function(socket) {
   
   socket.on('pickup entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
-      if (userHasPermissionToMove(info.username, info.entityID)) {
-        socket.emit('pickup entity confirm', entities[info.entityID].gridSpacing);
+      if (userEntityPermission(info.username, info.entityID)) {
+        socket.emit('pickup entity confirm', {
+          gridSpacing: entities[info.entityID].gridSpacing,
+          isGlobalObject: entities[info.entityID].isGlobalObject
+        });
       }
     }
   });
   
   socket.on('move entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
-      if (userHasPermissionToMove(info.username, info.entityID)) {
+      if (userEntityPermission(info.username, info.entityID)) {
         entities[info.entityID].x = info.x;
         entities[info.entityID].y = info.y;
       }
     }
     
     entityStateChange = true;
+  });
+  
+  socket.on('entity to inventory', function(info) {
+    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
+      if (userEntityPermission(info.username, info.entityID)) {
+        entities[info.entityID].onTable = false;
+        entityStateChange = true;
+      }
+    }
   });
 
   socket.on('new draw line', function(data) {
@@ -128,7 +140,7 @@ io.on('connection', function(socket) {
   });
 });
 
-function userHasPermissionToMove(username, entityID) {
+function userEntityPermission(username, entityID) {
   if (entities[entityID].requireAdmin) {
     if (players[username].isAdmin) {
       return true;
@@ -164,11 +176,12 @@ function generateDefaultEntities() {
   entities['test_block'] = {
     id: 'test_block',
     active: false,
-    onTable: false,
+    onTable: true,
     x: 0,
     y: 0,
     gridSpacing: 100,
-    requireAdmin: false
+    requireAdmin: false,
+    isGlobalObject: true
   }
 }
 
