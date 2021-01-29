@@ -4,24 +4,29 @@
   height: 100%;
   width: 100%;
   
-  grid-template-columns: 5vh 10vh 0.1fr 1fr 1fr 1fr 5vh;
-  grid-template-rows: 10vh 1fr 10vh 20px;
+  grid-template-columns: 5vh 90px 0.1fr 1fr 1fr 0.1fr 150px 5vh;
+  grid-template-rows: 10vh 1fr 90px 20px;
   
   grid-template-areas:
-    ". header header header header header ."
-    ". . . . . . ."
-    ". tiles . hand hand tools ."
-    ". . . . . . .";
+    ". header header header header header header ."
+    ". . . . . . . ."
+    ". tiles . hand hand . tools ."
+    ". . . . . . . .";
 }
 
-.deck_area {
+.inventory_area {
   z-index: var(--ui-z-index);
   
   vertical-align: top;
 
   background-color: var(--secondary-color);
-  border-radius: 0.5vw;
-
+  border-color: var(--secondary-color);
+  border-style: solid;
+  border-radius: 5px;
+  
+  overflow-y: scroll;
+  overflow-x: hidden;
+  
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -29,36 +34,130 @@
   -o-user-select: none;
 }
 
-.deck_area h2 {
-  position: relative;
+.inventory_area__active {
+  border-color: yellow;
+  background-color: darkgrey;
+  opacity: 0.8;
+}
+
+.inventory_area p {
+  position: absolute;
   color: black;
-  top: 38%;
-  margin: 0;
-  text-align: center;
+  margin: 3px;
+  margin-top: -16px;
   text-shadow: 1px 1px 0px white;
   z-index: 100;
 
   pointer-events: none;
 }
 
+.inventory_contents {
+  display: grid;
+  
+  grid-template-columns: repeat(auto-fill, 50px);
+  grid-template-rows: repeat(auto-fill, 50px);
+  grid-auto-rows: minmax(50px, 50px);
+  grid-row-gap: 5px;
+  grid-column-gap: 5px;
+  
+  margin-left: 3px;
+  margin-top: 3px;
+  
+  width: 100%;
+}
+
+.inventory_contents .item {
+  position: relative;
+  
+  border-style: solid;
+  box-sizing: border-box;
+  border-color: transparent;
+  border-radius: 5px;
+  
+  background-color: black;
+  /* background: url('/resources/tiles/meeple.svg'); */
+}
+
+.inventory_contents .item .num_box {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  
+  height: 10px;
+  width: 10px;
+  
+  border-style: solid;
+  border-color: transparent;
+  border-width: 5px;
+  border-radius: 10px;
+  
+  background-color: orange;
+}
+
+.inventory_contents .item .num_box:empty {
+  /* if the element is empty, dont display the circle */
+  display: none;
+}
+
+.inventory_contents .item .num_box span {
+  position: absolute;
+  left: -5px;
+  top: 0;
+  
+  height: 10px;
+  width: 20px;
+  
+  line-height: 0.4;
+  text-align: center;
+}
+
+
+/* width */
+.inventory_area::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.inventory_area::-webkit-scrollbar-track {
+  background: transparent;
+}
+ 
+/* Handle */
+.inventory_area::-webkit-scrollbar-thumb {
+  background: #888;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.inventory_area::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+
 .icon_grid {
   display: grid;
   z-index: var(--ui-z-index);
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas:
-    "icon_row_1"
-    "icon_row_2";
-}
-
-.icon_row {
+  grid-template-rows: repeat(auto-fill, 40px);
+  grid-template-columns: repeat(auto-fill, 40px);
   
+  grid-row-gap: 5px;
+  grid-column-gap: 5px;
 }
 
 #ui_tiles {
   grid-area: tiles;
 }
 
-#ui_hand {
+#ui_tiles .inventory_contents {
+  grid-template-columns: repeat(auto-fill, 74px);
+  grid-template-rows: repeat(auto-fill, 74px);
+  grid-auto-rows: minmax(73px, 73px);
+}
+
+#ui_inventory {
   grid-area: hand;
 }
 
@@ -75,19 +174,13 @@
 }
 
 .draw_icon {
-  display: inline-block;
-  vertical-align: top;
-  height: 2vw;
-  width: 2vw;
-  margin-bottom: 10px;
-  margin-left: 10px;
-  padding: 5px;
-  float: right;
+  height: 100%;
+  width: 100%;
 
-  background-color: var(--btn-color) !important;
-  background-size: 2vw !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+  background-color: var(--btn-color);
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
 
   border-radius: 5px;
 
@@ -95,25 +188,25 @@
 }
 
 #pointer_icon {
-  background: url('/resources/icons/cursor.svg');
+  background-image: url('/resources/icons/cursor.svg');
 }
 
 #pencil_icon {
-  background: url('/resources/icons/pencil.svg');
+  background-image: url('/resources/icons/pencil.svg');
 }
 
 #eraser_icon {
-  background: url('/resources/icons/eraser.svg');
+  background-image: url('/resources/icons/eraser.svg');
 }
 
 #question_icon {
-  background: url('/resources/icons/question.svg');
+  background-image: url('/resources/icons/question.svg');
 }
 
 #terminal_icon {
-  background: url('/resources/icons/terminal.svg');
+  background-image: url('/resources/icons/terminal.svg');
 }
 
 #wallpaper_icon {
-  background: url('/resources/icons/wallpaper.svg');
+  background-image: url('/resources/icons/wallpaper.svg');
 }

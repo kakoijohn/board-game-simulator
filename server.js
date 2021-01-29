@@ -110,16 +110,20 @@ io.on('connection', function(socket) {
       if (userEntityPermission(info.username, info.entityID)) {
         entities[info.entityID].x = info.x;
         entities[info.entityID].y = info.y;
+        entities[info.entityID].stateChange = true;
+        
+        entityStateChange = true;
       }
     }
     
-    entityStateChange = true;
   });
   
   socket.on('entity to inventory', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {
         entities[info.entityID].onTable = false;
+        entities[info.entityID].stateChange = true;
+        
         entityStateChange = true;
       }
     }
@@ -159,30 +163,76 @@ setInterval(function() {
     playerStateChange = false;
   }
   if (entityStateChange) {
-    io.sockets.emit('entity state', entities);
+    let changedEntities = getChangedEntities();
+    io.sockets.emit('entity state', changedEntities);
     entityStateChange = false;
   }
 }, 1000 / 24);
 
-//emit the state every ten seconds regardless of change.
+//emit the state every 5 seconds regardless of change.
 setInterval(function() {
-  // io.sockets.emit('deck state', deck);
-  // io.sockets.emit('chips state', chips);
-  // io.sockets.emit('player state', players);
-  // io.sockets.emit('player vehicle state', playerVehicles);
+  let cleanEntities = getAllEntities();
+  io.sockets.emit('entity state', cleanEntities);
 }, 5000);
+
+function getChangedEntities() {
+  let changedEntities = {};
+  for (var id in entities) {
+    if (entities[id].stateChange) {
+      changedEntities[id] = cleanUpEntity(entities[id]);
+      entities[id].stateChange = false;
+    }
+  }
+  
+  return changedEntities;
+}
+
+function getAllEntities() {
+  let cleanEntities = {};
+  for (var id in entities) {
+    cleanEntities[id] = cleanUpEntity(entities[id]);
+  }
+  
+  return cleanEntities;
+}
+
+function cleanUpEntity(entity) {
+  let cleanEntity = {
+    id: entity.id,
+    type: entity.type,
+    x: entity.x,
+    y: entity.y,
+    canStack: entity.canStack,
+    onTable: entity.onTable,
+    isGlobalObject: entity.isGlobalObject
+  };
+}
 
 function generateDefaultEntities() {
   entities['test_block'] = {
     id: 'test_block',
-    active: false,
-    onTable: true,
+    type: 'tile',
     x: 0,
     y: 0,
     gridSpacing: 100,
+    canStack: true,
+    onTable: true, //on the table or in the inventory
     requireAdmin: false,
-    isGlobalObject: true
-  }
+    isGlobalObject: true,
+    stateChange: false
+  };
+  entities['test_meeple'] = {
+    id: 'test_meeple',
+    type: 'meeple',
+    x: 0,
+    y: 0,
+    gridSpacing: 0,
+    canStack: false,
+    onTable: true,
+    requireAdmin: false,
+    isGlobalObject: false,
+    stateChange: false
+  };
 }
 
 const serverPassword = 'hackermikecarns';

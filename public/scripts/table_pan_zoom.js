@@ -57,14 +57,14 @@ ele.addEventListener('mousedown', mouseDownHandler);
 const defaultWidth = $('#table').css('width').replace('px', '');
 const defaultHeight = $('#table').css('height').replace('px', '');
 
-const zoomStep = 0.05;
+const zoomStep = 0.0005;
 var zoomScale = 1;
 
 const zoom = function(e) {
   if (e.deltaY == 0)
     return; // dont do anything if the delta didnt change
   
-  let direction = e.deltaY / Math.abs(e.deltaY);
+  let direction = e.deltaY;
   
   zoomScale -= (direction * zoomStep);
   

@@ -16,8 +16,31 @@ body {
   padding: 0;
 
   font-family: 'ff-brokenscript-web', 'Josefin Sans', sans-serif;
-  font-size: 1.2vw;
 }
+
+/* width */
+/* ::-webkit-scrollbar {
+  width: 5px;
+} */
+
+/* Track */
+/* ::-webkit-scrollbar-track {
+  background: transparent;
+} */
+ 
+/* Handle */
+/* ::-webkit-scrollbar-thumb {
+  background: #888;
+  border-style: solid;
+  border-radius: 10px;
+} */
+
+/* Handle on hover */
+/* ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  border-style: solid;
+  border-radius: 10px;
+} */
 
 #table_container {
   position: fixed;
@@ -75,28 +98,6 @@ body {
 
 .table__bg_1 {
   background: url('/resources/backgrounds/table.svg');
-}
-
-#test_block {
-  position: absolute;
-  
-  height: 100px;
-  width: 100px;
-  
-  background-color: blue;
-  
-  top: 1500px;
-  left: 1500px;
-  
-  z-index: var(--table-z-index);
-}
-
-#test_block:hover {
-  cursor: grab;
-}
-
-#test_block:active {
-  cursor: grabbing;
 }
 
 #drawing_area {

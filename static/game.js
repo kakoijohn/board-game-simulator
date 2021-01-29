@@ -292,6 +292,8 @@ Game Vars
 let drawing;
 let cursorMode;
 
+let entitiesCache = {};
+
 let targetEntity = {
   id: '',
   x: 0,
@@ -356,12 +358,6 @@ $(window).mousemove(function (evt) {
       targetEntity.x = Math.round(targetEntity.x / targetEntity.gridSpacing) * targetEntity.gridSpacing;
       targetEntity.y = Math.round(targetEntity.y / targetEntity.gridSpacing) * targetEntity.gridSpacing;
     }
-    
-    if (targetEntity.isOverInventory) {
-      $('#' + targetEntity.id).css('transform', 'translateZ(10px)');
-    } else {
-      // $('#' + targetEntity.id).css('transform', 'translateZ(0)');
-    }
 
 		//move the card locally on our screen before sending the data to the server.
 		$('#' + targetEntity.id).css('left', targetEntity.x + 'px');
@@ -385,17 +381,7 @@ $(window).mousemove(function (evt) {
 	playerInfo.stateChanged = true;
 });
 
-$(document).on('mouseover', '#ui_tiles', function(evt) {
-  if (targetEntity.active && targetEntity.isGlobalObject) {
-    targetEntity.isOverInventory = true;
-  }
-});
 
-$(document).on('mouseleave', '#ui_tiles', function(evt) {
-  if (targetEntity.isOverInventory) {
-    targetEntity.isOverInventory = false;
-  }
-});
 
 $(window).mouseup(function(evt) {
   if (targetEntity.active) {
@@ -426,8 +412,6 @@ $(window).mouseup(function(evt) {
 	}
 });
 
-
-
 /**
 
 send our player state to the server
@@ -455,7 +439,30 @@ Listen for the sever for states of the deck, chips, and other players.
 
 //listen for the state of the table from server
 socket.on('entity state', function(entities) {
-  
+  for (let id in entities) {
+    let entity = entities[id];
+    
+    if (entitiesCache[id] == undefined) {
+      entitiesCache[id] = entity;
+    }
+    
+    if (entity.onTable) {
+      if (targetEntity.id != id || !targetChip.active) {
+        
+        
+        $('#' + id).css('left', entity.x + 'px');
+    		$('#' + id).css('top', entity.y + 'px');
+      }
+    } else {
+      if (entity.isGlobalObject) {
+        
+      } else {
+        
+      }
+    }
+    
+    entitiesCache[id] = entity; // set the cached entity to the new value
+  }
 });
 
 // if we recieve confirmation that we picked up the entity
@@ -474,7 +481,6 @@ socket.on('reset chip', function(chipIndex) {
 		$('#' + chipIndex).toggleClass('card_return_to_deck_anim', false);
 	}, 1000);
 });
-
 
 /**
 
@@ -501,12 +507,10 @@ function drawOnCanvas(data) {
 	ctx.closePath();
 }
 
-var craterSprite = new Image();
-craterSprite.src = '/resources/images/sprites/crater.png';
 
 function drawExplosionOnCanvas(data) {
-  ctx.drawImage(craterSprite, (data.x / 100) * canvas.width, (data.y / 100) * canvas.height,
-                              (2.5 / 100) * canvas.width, (5 / 100) * canvas.height);
+  // ctx.drawImage(craterSprite, (data.x / 100) * canvas.width, (data.y / 100) * canvas.height,
+  //                             (2.5 / 100) * canvas.width, (5 / 100) * canvas.height);
 }
 
 socket.on('new draw line', function(data) {

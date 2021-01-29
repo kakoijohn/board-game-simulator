@@ -1,0 +1,36 @@
+.entity {
+  position: absolute;
+  z-index: var(--table-z-index);
+}
+
+.entity:hover {
+  cursor: grab;
+}
+
+.entity:active {
+  cursor: grabbing;
+}
+
+#test_block {
+  height: 100px;
+  width: 100px;
+  
+  background-color: blue;
+  
+  top: 1500px;
+  left: 1500px;
+}
+
+#test_meeple {
+  height: 50px;
+  width: 50px;
+  
+  background: url('/resources/tiles/meeple.svg');
+  
+  top: 500px;
+  left: 500px;
+}
+
+.entity__over_inventory {
+  transform: rotate(15deg);
+}
