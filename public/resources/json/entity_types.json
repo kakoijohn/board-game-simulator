@@ -1,95 +1,74 @@
 {
-  "land_tile": {
-    "length": 71
-    "path": "/resources/tiles/tile_bottom/",
-    "files": [
-      "1x4.svg",
-      "1x4.svg",
-      "1x4.svg",
-      "1x4.svg",
-      "2x2.svg",
-      "2x2.svg",
-      "3x1.svg",
-      "4x3.svg",
-      "4x3.svg",
-      "4x3.svg",
-      "5x1.svg",
-      "6x1.svg",
-      "7x2.svg",
-      "7x2.svg",
-      "8x3.svg",
-      "8x3.svg",
-      "8x3.svg",
-      "9x2.svg",
-      "9x2.svg",
-      "10x3.svg",
-      "10x3.svg",
-      "10x3.svg",
-      "11x2.svg",
-      "11x2.svg",
-      "12x1.svg",
-      "13x2.svg",
-      "13x2.svg",
-      "14x2.svg",
-      "14x2.svg",
-      "15x3.svg",
-      "15x3.svg",
-      "15x3.svg",
-      "16x5.svg",
-      "16x5.svg",
-      "16x5.svg",
-      "16x5.svg",
-      "16x5.svg",
-      "17x3.svg",
-      "17x3.svg",
-      "17x3.svg",
-      "18x3.svg",
-      "18x3.svg",
-      "18x3.svg",
-      "19x3.svg",
-      "19x3.svg",
-      "19x3.svg",
-      "20x4.svg",
-      "20x4.svg",
-      "20x4.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "21x8.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "22x9.svg",
-      "23x4.svg",
-      "23x4.svg",
-      "23x4.svg",
-      "23x4.svg",
-      "24x1.svg"
-    ],
-    "reverse": "/resources/tiles/tile_top/land_tile_top.svg"
+  "entity_types": {
+    "land_tile": {
+      "type": "land_tile",
+      "gridSpacing": 100,
+      "hasReverse": true,
+      "canStack": true,
+      "permission": 0,
+      "length": 71,
+      "path": "/resources/tiles/tile_bottom/",
+      "files": [
+        "1x4.svg","1x4.svg","1x4.svg","1x4.svg","2x2.svg","2x2.svg","3x1.svg",
+        "4x3.svg","4x3.svg","4x3.svg","5x1.svg","6x1.svg","7x2.svg","7x2.svg",
+        "8x3.svg","8x3.svg","8x3.svg","9x2.svg","9x2.svg","10x3.svg","10x3.svg",
+        "10x3.svg","11x2.svg","11x2.svg","12x1.svg","13x2.svg","13x2.svg","14x2.svg",
+        "14x2.svg","15x3.svg","15x3.svg","15x3.svg","16x5.svg","16x5.svg","16x5.svg",
+        "16x5.svg","16x5.svg","17x3.svg","17x3.svg","17x3.svg","18x3.svg","18x3.svg",
+        "18x3.svg","19x3.svg","19x3.svg","19x3.svg","20x4.svg","20x4.svg","20x4.svg",
+        "21x8.svg","21x8.svg","21x8.svg","21x8.svg","21x8.svg","21x8.svg","21x8.svg",
+        "21x8.svg","22x9.svg","22x9.svg","22x9.svg","22x9.svg","22x9.svg","22x9.svg",
+        "22x9.svg","22x9.svg","22x9.svg","23x4.svg","23x4.svg","23x4.svg","23x4.svg",
+        "24x1.svg"
+      ],
+      "reverse": "/resources/tiles/tile_top/land_tile_top.svg"
+    },
+    "starting_tile": {
+      "type": "starting_tile",
+      "gridSpacing": 100,
+      "hasReverse": true,
+      "canStack": true,
+      "permission": 0,
+      "length": 1,
+      "path": "/resources/tiles/tile_bottom/",
+      "files": [
+        "20x4.svg"
+      ],
+      "reverse": "/resources/tiles/tile_top/starting_tile_top.svg"
+    },
+    "meeple": {
+      "type": "meeple",
+      "gridSpacing": 0,
+      "hasReverse": false,
+      "canStack": false,
+      "permission": 2,
+      "length": 1,
+      "path": "/resources/tiles/",
+      "files": [
+        "meeple.svg"
+      ]
+    }
   },
-  "starting_tile": {
-    "length": 1,
-    "path": "/resources/tiles/tile_bottom/",
-    "files": [
-      "20x4.svg"
-    ],
-    "reverse": "/resources/tiles/tile_top/starting_tile_top.svg"
+  "default_vars": {
+    "id": "",
+    "index": 0,
+    "x": 0,
+    "y": 0,
+    "location": 0,
+    "owner": "",
+    "stateChange": false
   },
-  "meeple": {
-    "length": 1,
-    "path": "/resources/tiles/",
-    "files": [
-      "meeple.svg"
-    ]
+  "metadata": {
+    "permission_levels": {
+      0: "no restrictions"
+      1: "admin required",
+      2: "belongs to player"
+    },
+    "locations": {
+      0: "inventory",
+      1: "table",
+      2: "trash",
+      3: "purgatory"
+    }
   }
 }

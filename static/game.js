@@ -453,12 +453,6 @@ socket.on('entity state', function(entities) {
         $('#' + id).css('left', entity.x + 'px');
     		$('#' + id).css('top', entity.y + 'px');
       }
-    } else {
-      if (entity.isGlobalObject) {
-        
-      } else {
-        
-      }
     }
     
     entitiesCache[id] = entity; // set the cached entity to the new value

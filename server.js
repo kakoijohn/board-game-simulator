@@ -179,7 +179,7 @@ function getChangedEntities() {
   let changedEntities = {};
   for (var id in entities) {
     if (entities[id].stateChange) {
-      changedEntities[id] = cleanUpEntity(entities[id]);
+      changedEntities[id] = simplifyEntity(entities[id]);
       entities[id].stateChange = false;
     }
   }
@@ -190,14 +190,14 @@ function getChangedEntities() {
 function getAllEntities() {
   let cleanEntities = {};
   for (var id in entities) {
-    cleanEntities[id] = cleanUpEntity(entities[id]);
+    cleanEntities[id] = simplifyEntity(entities[id]);
   }
   
   return cleanEntities;
 }
 
-function cleanUpEntity(entity) {
-  let cleanEntity = {
+function simplifyEntity(entity) {
+  let simpleEntity = {
     id: entity.id,
     type: entity.type,
     x: entity.x,
@@ -252,7 +252,8 @@ function consolecmd(text, source, id) {
         let opStatus = false;
         if (adminList[id] != undefined)
           opStatus = true;
-        response += 'id: ' + id + ', display name: ' + player.username + ', color: ' + player.color + ', is admin: ' + opStatus + '\n';
+        response += 'id: ' + id + ', display name: ' + player.username + ', color:
+                    ' + player.color + ', is admin: ' + opStatus + '\n';
       }
     } else if (command[0] == 'removeuser' && command[1] != undefined) {
       var playerID = command[1];
@@ -324,7 +325,8 @@ function consolecmd(text, source, id) {
         let opStatus = false;
         if (adminList[id] != undefined)
           opStatus = true;
-        response += 'id: ' + id + ', display name: ' + player.username + ', color: ' + player.color + ', is admin: ' + opStatus + '\n';
+        response += 'id: ' + id + ', display name: ' + player.username +
+                    ', color: ' + player.color + ', is admin: ' + opStatus + '\n';
       }
     } else if (command[0] == 'help') {
       response = "List of Commands:" + '\n' +
