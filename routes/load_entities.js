@@ -12,7 +12,7 @@ exports.loadDefaultEntities = function() {
     let entityType = config.entity_types[id];
 
     for (let i = 0; i < entityType.length; i++) {
-      entities[entityType.type + '_' + // IDEA: ] = {
+      entities[entityType.type + '_' + i] = {
         id: entityType.type + '_' + i,
         index: i,
         type: entityType.type,

@@ -1,5 +1,3 @@
-const serverPassword = 'hackermikecarns';
-
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
@@ -8,43 +6,51 @@ process.stdin.on('data', function (text) {
 });
 
 exports.consolecmd = function(text, source, id, players) {
-  return consolecmd(text, source, id, players);
+  return consolecmd(text, source, id, players).response;
 };
 
+const serverPassword = 'hackermikecarns';
+
 function consolecmd(text, source, id, players) {
+  io.sockets.emit('test');
   var command = text.trim().replace('\n', '').split(' ');
   var response = '';
+  var callback = {
+    func: "",
+    args: "",
+  }
 
   if (source == 'server' || (source == 'client' && players[id].isAdmin == true)) {
     if (command[0] == 'listusers') {
       for (var id in players) {
         let player = players[id];
-        let opStatus = false;
-        if (adminList[id] != undefined)
-          opStatus = true;
         response += 'id: ' + id + ', display name: ' + player.username + ', color:'
-                    + player.color + ', is admin: ' + opStatus + '\n';
+                    + player.color + ', is admin: ' + players.isAdmin + '\n';
       }
     } else if (command[0] == 'removeuser' && command[1] != undefined) {
       var playerID = command[1];
       if (players[playerID] != undefined) {
         delete players[playerID];
-        io.sockets.emit('remove user', playerID);
-        playerStateChange = true;
+        callback.func = "socket remove user";
+        callback.args = playerID;
+        // io.sockets.emit('remove user', playerID);
         response = "Removing user: " + playerID;
       } else {
         response = "Error: Invalid payout command. playerID not found.";
       }
     } else if (command[0] == 'resetserver') {
-      io.sockets.emit('reload page');
-      players = null;
+      callback.func = "socket reset server";
+      // io.sockets.emit('reload page');
+      // players = null;
       response = "Cleared all players from server and sent out refresh call to all clients.";
     } else if (command[0] == 'op' && command[1] != undefined) {
       // op command when the player initiating is already an admin, doesnt require password
       var playerID = command[1];
   
       if (players[playerID] != undefined) {
-        players[playerID].isAdmin = true;
+        callback.func = "set admin";
+        callback.args = {playerID: playerID, setAdmin: true};
+        
         response = "Gave console command permissions to: " + playerID;
       } else if (players[playerID] == undefined) {
         response = "Error: Invalid OP command. playerID not found.";
@@ -54,7 +60,9 @@ function consolecmd(text, source, id, players) {
       var playerID = command[1];
   
       if (players[playerID] != undefined) {
-        players[playerID].isAdmin = false;
+        callback.func = "set admin";
+        callback.args = {playerID: playerID, setAdmin: false};
+        
         response = "Removed console command permissions from: " + playerID;
       } else if (players[playerID] == undefined) {
         response = "Error: Invalid OP command. playerID is not an OP.";
@@ -81,7 +89,9 @@ function consolecmd(text, source, id, players) {
       var password = command[2];
   
       if (players[playerID] != undefined && password == serverPassword) {
-        players[playerID].isAdmin = true;
+        callback.func = "set admin";
+        callback.args = {playerID: playerID, setAdmin: true};
+        
         response = "Gave console command permissions to: " + playerID + '\n' +
                    "Type \"help\" for a new list of available commands.";
       } else if (players[playerID] == undefined) {
@@ -92,11 +102,8 @@ function consolecmd(text, source, id, players) {
     } else if (command[0] == 'listusers') {
       for (var id in players) {
         let player = players[id];
-        let opStatus = false;
-        if (adminList[id] != undefined)
-          opStatus = true;
         response += 'id: ' + id + ', display name: ' + player.username +
-                    ', color: ' + player.color + ', is admin: ' + opStatus + '\n';
+                    ', color: ' + player.color + ', is admin: ' + player.isAdmin + '\n';
       }
     } else if (command[0] == 'help') {
       response = "List of Commands:" + '\n' +
@@ -105,11 +112,11 @@ function consolecmd(text, source, id, players) {
       "op [playerID] [password]" + '\n' +
       "-- gives admin persmissions to the specified user to initiate console commands.";
     } else {
-      response = "Error: Invalid command OR you do not have permission to use console commands." + '\n' +
-                 "Type \"help\" for a list of available commands.";
+      response = "Error: Invalid command OR you do not have permission to use console commands."
+                  + '\n' + "Type \"help\" for a list of available commands.";
     }
   }
 
   console.log(response);
-  return response;
+  return {response: response, callback: callback};
 }
