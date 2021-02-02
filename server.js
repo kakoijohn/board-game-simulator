@@ -8,8 +8,8 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
+// var entities = require("./routes/load_entities");
+var consoleCmds = require("./routes/console_commands");
 
 var PORT = process.env.PORT || 5000;
 app.set('port', PORT);
@@ -139,7 +139,7 @@ io.on('connection', function(socket) {
 
   // console commands
   socket.on('console command', function(cmdInfo) {
-    var response = consolecmd(cmdInfo.command, 'client', cmdInfo.id);
+    var response = consoleCmds.consolecmd(cmdInfo.command, 'client', cmdInfo.id, players);
     socket.emit('console response', response);
   });
 });
@@ -234,6 +234,7 @@ function generateDefaultEntities() {
     stateChange: false
   };
 }
+<<<<<<< Updated upstream
 
 
 
@@ -346,3 +347,5 @@ function consolecmd(text, source, id) {
   console.log(response);
   return response;
 }
+=======
+>>>>>>> Stashed changes
