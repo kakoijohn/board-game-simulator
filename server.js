@@ -8,7 +8,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-// var entities = require("./routes/load_entities");
+var entityLoader = require("./routes/load_entities");
 var consoleCmds = require("./routes/console_commands");
 
 var PORT = process.env.PORT || 5000;
@@ -137,10 +137,12 @@ io.on('connection', function(socket) {
   	io.sockets.emit('clear draw area');
   });
 
-  // console commands
+  // console commands sent from client
   socket.on('console command', function(cmdInfo) {
-    var response = consoleCmds.consolecmd(cmdInfo.command, 'client', cmdInfo.id, players);
-    socket.emit('console response', response);
+    let data = consoleCmds.consolecmd(cmdInfo.command, 'client', cmdInfo.id, players);
+    socket.emit('console response', data.response);
+    console.log(data.response);
+    consoleCallback(data.callback);
   });
 });
 
@@ -209,28 +211,37 @@ function simplifyEntity(entity) {
 }
 
 function generateDefaultEntities() {
-  entities['test_block'] = {
-    id: 'test_block',
-    type: 'tile',
-    x: 0,
-    y: 0,
-    gridSpacing: 100,
-    canStack: true,
-    onTable: true, //on the table or in the inventory
-    requireAdmin: false,
-    isGlobalObject: true,
-    stateChange: false
-  };
-  entities['test_meeple'] = {
-    id: 'test_meeple',
-    type: 'meeple',
-    x: 0,
-    y: 0,
-    gridSpacing: 0,
-    canStack: false,
-    onTable: true,
-    requireAdmin: false,
-    isGlobalObject: false,
-    stateChange: false
-  };
+  entities = entityLoader.loadDefaultEntities();
+}
+
+
+/**
+Console Commands
+**/
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (text) {
+  let data = consoleCmds.consolecmd(text, 'server', '');
+  console.log(data.response);
+  consoleCallback(data.callback);
+});
+
+function consoleCallback(callback) {
+  let func = callback.func;
+  let args = callback.args;
+  
+  if (func == 'socket remove user') {
+    io.sockets.emit('remove user', args.playerID);
+    delete players[args.playerID];
+  } else if (func == 'socket reset server') {
+    io.sockets.emit('reload page');
+    players = null;
+  } else if (func == 'set admin') {
+    if (args.setAdmin) {
+      players[args.playerID].isAdmin = true;
+    } else {
+      players[args.playerID].isAdmin = false;
+    }
+  }
 }

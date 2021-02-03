@@ -58,17 +58,21 @@
     "owner": "",
     "stateChange": false
   },
+  "default_entities": [
+    "land_tile",
+    "starting_tile"
+  ],
   "metadata": {
     "permission_levels": {
-      0: "no restrictions"
-      1: "admin required",
-      2: "belongs to player"
+      "0": "no restrictions",
+      "1": "admin required",
+      "2": "belongs to player"
     },
     "locations": {
-      0: "inventory",
-      1: "table",
-      2: "trash",
-      3: "purgatory"
+      "0": "inventory",
+      "1": "table",
+      "2": "trash",
+      "3": "purgatory"
     }
   }
 }

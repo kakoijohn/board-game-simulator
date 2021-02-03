@@ -8,7 +8,8 @@ var config = JSON.parse(rawData);
 exports.loadDefaultEntities = function() {
   let entities = {};
   
-  for (id in config.entity_types) {
+  for (let index in config.default_entities) {
+    let id = config.default_entities[index];
     let entityType = config.entity_types[id];
 
     for (let i = 0; i < entityType.length; i++) {

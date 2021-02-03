@@ -229,6 +229,10 @@ $('#dcolor').keypress(function(event) {
         newPlayerSubmit();
 });
 
+socket.on('io', function() {
+  console.log('hello');
+});
+
 socket.on('new player confirmation', function(newPlayer) {
 	playerInfo.username = newPlayer.username;
 	playerInfo.id = newPlayer.id;
