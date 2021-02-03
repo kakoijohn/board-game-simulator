@@ -17,14 +17,15 @@ exports.loadDefaultEntities = function() {
         id: entityType.type + '_' + i,
         index: i,
         type: entityType.type,
-        x: config.default_vars.x,
-        y: config.default_vars.y,
+        x: config.default_entity_vars.x,
+        y: config.default_entity_vars.y,
         gridSpacing: entityType.gridSpacing,
         hasReverse: entityType.hasReverse,
         canStack: entityType.canStack,
-        location: config.default_vars.location,
+        homeLocation: entityType.home,
+        location: config.default_entity_vars.location,
         permission: entityType.permission,
-        owner: config.default_vars.owner,
+        owner: config.default_entity_vars.owner,
         stateChange: false
       }
     }

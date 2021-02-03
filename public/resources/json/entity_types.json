@@ -5,6 +5,7 @@
       "gridSpacing": 100,
       "hasReverse": true,
       "canStack": true,
+      "homeLocation": 2,
       "permission": 0,
       "length": 71,
       "path": "/resources/tiles/tile_bottom/",
@@ -28,6 +29,7 @@
       "gridSpacing": 100,
       "hasReverse": true,
       "canStack": true,
+      "homeLocation": 2,
       "permission": 0,
       "length": 1,
       "path": "/resources/tiles/tile_bottom/",
@@ -41,6 +43,7 @@
       "gridSpacing": 0,
       "hasReverse": false,
       "canStack": false,
+      "homeLocation": 3,
       "permission": 2,
       "length": 1,
       "path": "/resources/tiles/",
@@ -49,7 +52,7 @@
       ]
     }
   },
-  "default_vars": {
+  "default_entity_vars": {
     "id": "",
     "index": 0,
     "x": 0,
@@ -62,17 +65,38 @@
     "land_tile",
     "starting_tile"
   ],
+  "locations": [
+    {
+      "name": "home",
+      "comment": "this is whatever the home var of that entity is set to"
+    },
+    {
+      "name": "table",
+    }
+    {
+      "name": "inventory",
+      "height": 1,
+      "width": 2,
+      "shared": true
+    },
+    {
+      "name": "backpack",
+      "height": 1,
+      "width": 5,
+      "shared": false
+    },
+    {
+      "name": "trash",
+    },
+    {
+      "name": "purgatory",
+    }
+  ],
   "metadata": {
     "permission_levels": {
       "0": "no restrictions",
       "1": "admin required",
       "2": "belongs to player"
-    },
-    "locations": {
-      "0": "inventory",
-      "1": "table",
-      "2": "trash",
-      "3": "purgatory"
     }
   }
 }
