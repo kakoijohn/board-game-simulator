@@ -17,62 +17,50 @@ function loadEntities(entities) {
 }
 
 function spawnNewEntity(entity) {
-  spawnEntityOnTable(entity, true);
-  spawnEntityInInventory(entity, true);
+  spawnEntityOnTable(entity, false);
+  spawnEntityAtHome(entity, true);
 }
 
 function spawnEntityOnTable(entity, isVisible) {
   let index = entity.index;
   let loc = config.locations[1].name;
+  let htmlID = loc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
   let width  = config.entity_types[entity.type].width;
   let height = config.entity_types[entity.type].height;
   
-  $('#table').append('<div class=\"entity\" id=\"' + loc + '_' + entity.id +  '\"></div>');
-  $('#' + loc + '_' + entity.id).css('background-image', 'url(' + filePath + fileName + ')');
-  $('#' + loc + '_' + entity.id).css('width',  width);
-  $('#' + loc + '_' + entity.id).css('height', height);
-  $('#' + loc + '_' + entity.id).css('left', entity.x + 'px');
-  $('#' + loc + '_' + entity.id).css('top',  entity.y + 'px');
+  $('#table').append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
+  $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
+  $('#' + htmlID).css('width',  width);
+  $('#' + htmlID).css('height', height);
+  $('#' + htmlID).css('left', entity.x + 'px');
+  $('#' + htmlID).css('top',  entity.y + 'px');
   
   if (!isVisible)
-    $('#table_' + entity.id).css('display', 'none');
+    $('#' + htmlID).css('display', 'none');
 }
 
-function spawnEntityInInventory(entity, isVisible) {
-  $('#inventory').append(
-    '<div class=\"item\" id=\"inventory_' + entity.id +  '\">' +
-    '<div class=\"num_box\"></div></div>');
-  
+function spawnEntityAtHome(entity, isVisible) {
   let index = entity.index;
+  let homeLocIndex = config.entity_types[entity.type].homeLoc;
+  let homeLoc = config.locations[homeLocIndex].name;
+  let htmlID = homeLoc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
   
-  $('#inventory_' + entity.id).css('background-image', 'url(' + filePath + fileName + ')');
+  $('#' + homeLoc).append('<div class=\"item\" id=\"' + htmlID +  '\">'
+                          + '<div class=\"num_box\"></div></div>');
+  
+  $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
   
   if (!isVisible)
-    $('#inventory_' + entity.id).css('display', 'none');
+    $('#' + htmlID).css('display', 'none');
 }
 
 // swap the entity from the table to the hand
 function swapEntityLocation(entity) {
   
-}
-
-function spawnEntityInHand(entity) {
-  $('#inventory').append(
-    '<div class=\"item\" id=\"hand_' + entity.id +  '\">' +
-    '<div class=\"num_box\"></div></div>');
-  
-  let index = entity.index;
-  let filePath = config.entity_types[entity.type].path;
-  let fileName = config.entity_types[entity.type].files[index];
-  
-  $('#hand_' + entity.id).css('background-image', 'url(' + filePath + fileName + ')');
-  
-  if (!isVisible)
-    $('#hand_' + entity.id).css('display', 'none');
 }
 
 function despawnAllEntities() {
