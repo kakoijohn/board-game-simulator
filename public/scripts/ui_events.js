@@ -1,42 +1,42 @@
 $(document).on('mouseenter', '#ui_tiles', function(evt) {
-  if (targetEntity.active && targetEntity.isGlobalObject) {
-    targetEntity.isOverInventory = true;
+  if (targEnt.active && targEnt.isGlobalObject) {
+    targEnt.isOverInventory = true;
     
     $('#ui_tiles').toggleClass('inventory_area__active', true);
-    $('#' + targetEntity.id).toggleClass('entity__over_inventory', true);
+    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', true);
     
     $('#tiles').append('<div class="item" id="placeholder_item"></div>');
   }
 });
 
 $(document).on('mouseleave', '#ui_tiles', function(evt) {
-  if (targetEntity.isOverInventory) {
-    targetEntity.isOverInventory = false;
+  if (targEnt.isOverInventory) {
+    targEnt.isOverInventory = false;
     
     $('#ui_tiles').toggleClass('inventory_area__active', false);
-    $('#' + targetEntity.id).toggleClass('entity__over_inventory', false);
+    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', false);
     
     $('#placeholder_item').remove();
   }
 });
 
 $(document).on('mouseenter', '#ui_inventory', function(evt) {
-  if (targetEntity.active && !targetEntity.isGlobalObject) {
-    targetEntity.isOverInventory = true;
+  if (targEnt.active && !targEnt.isGlobalObject) {
+    targEnt.isOverInventory = true;
     
     $('#ui_inventory').toggleClass('inventory_area__active', true);
-    $('#' + targetEntity.id).toggleClass('entity__over_inventory', true);
+    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', true);
     
     $('#inventory').append('<div class="item" id="placeholder_item"></div>');
   }
 });
 
 $(document).on('mouseleave', '#ui_inventory', function(evt) {
-  if (targetEntity.isOverInventory) {
-    targetEntity.isOverInventory = false;
+  if (targEnt.isOverInventory) {
+    targEnt.isOverInventory = false;
     
     $('#ui_inventory').toggleClass('inventory_area__active', false);
-    $('#' + targetEntity.id).toggleClass('entity__over_inventory', false);
+    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', false);
     
     $('#placeholder_item').remove();
   }

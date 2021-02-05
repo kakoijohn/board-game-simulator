@@ -24,7 +24,6 @@ function consolecmd(text, source, id, players) {
     } else if (command[0] == 'removeuser' && command[1] != undefined) {
       var playerID = command[1];
       if (players[playerID] != undefined) {
-        delete players[playerID];
         callback.func = 'socket remove user';
         callback.args = {playerID: playerID};
         

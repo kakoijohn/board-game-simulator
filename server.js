@@ -8,7 +8,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-var entityLoader = require("./routes/load_entities");
+var entityHandler = require("./routes/entity_handler");
 var consoleCmds = require("./routes/console_commands");
 
 var PORT = process.env.PORT || 5000;
@@ -26,7 +26,7 @@ server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
   
   console.log('generating default entities');
-  generateDefaultEntities();
+  entities = entityHandler.loadDefaultEntities();
 });
 
 var players = {};
@@ -75,6 +75,9 @@ io.on('connection', function(socket) {
 
   	//callback to client that we have put them into the system.
     socket.emit('new player confirmation', {username, id, color, currentWallpaper});
+    //callback to the client with the state of all the entities on the board
+    let simpEntities = entityHandler.getAllSimpEntities(entities);
+    socket.emit('load new entities', simpEntities);
 
     //tell all clients we have a new player and send a list of all the current players.
     io.sockets.emit('new player notification', players);
@@ -97,10 +100,7 @@ io.on('connection', function(socket) {
   socket.on('pickup entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {
-        socket.emit('pickup entity confirm', {
-          gridSpacing: entities[info.entityID].gridSpacing,
-          isGlobalObject: entities[info.entityID].isGlobalObject
-        });
+        socket.emit('pickup entity confirm');
       }
     }
   });
@@ -147,7 +147,7 @@ io.on('connection', function(socket) {
 });
 
 function userEntityPermission(username, entityID) {
-  if (entities[entityID].requireAdmin) {
+  if (entities[entityID].permission > 0) {
     if (players[username].isAdmin) {
       return true;
     } else {
@@ -165,54 +165,17 @@ setInterval(function() {
     playerStateChange = false;
   }
   if (entityStateChange) {
-    let changedEntities = getChangedEntities();
+    let changedEntities = entityHandler.getChangedEntities();
     io.sockets.emit('entity state', changedEntities);
     entityStateChange = false;
   }
 }, 1000 / 24);
 
-//emit the state every 5 seconds regardless of change.
+//emit the state every 10 seconds regardless of change.
 setInterval(function() {
-  let cleanEntities = getAllEntities();
-  io.sockets.emit('entity state', cleanEntities);
-}, 5000);
-
-function getChangedEntities() {
-  let changedEntities = {};
-  for (var id in entities) {
-    if (entities[id].stateChange) {
-      changedEntities[id] = simplifyEntity(entities[id]);
-      entities[id].stateChange = false;
-    }
-  }
-  
-  return changedEntities;
-}
-
-function getAllEntities() {
-  let cleanEntities = {};
-  for (var id in entities) {
-    cleanEntities[id] = simplifyEntity(entities[id]);
-  }
-  
-  return cleanEntities;
-}
-
-function simplifyEntity(entity) {
-  let simpleEntity = {
-    id: entity.id,
-    type: entity.type,
-    x: entity.x,
-    y: entity.y,
-    canStack: entity.canStack,
-    onTable: entity.onTable,
-    isGlobalObject: entity.isGlobalObject
-  };
-}
-
-function generateDefaultEntities() {
-  entities = entityLoader.loadDefaultEntities();
-}
+  let simpEntities = entityHandler.getAllSimpEntities(entities);
+  io.sockets.emit('entity state', simpEntities);
+}, 10000);
 
 
 /**

@@ -5,7 +5,7 @@ Setup sockets and event listeners
 **/
 
 var socket = io();
-var socketWasConnected = false;
+let socketWasConnected = false;
 
 socket.on('message', function(data) {
   console.log(data);
@@ -170,7 +170,7 @@ $(document).ready(function() {
 	canvas.height = tableHeight;
 });
 
-$( window ).resize(function() {
+$(window).resize(function() {
 	tableWidth = $('.table').width();
 	tableHeight = $('.table').height();
 
@@ -227,10 +227,6 @@ $('#dname').keypress(function(event) {
 $('#dcolor').keypress(function(event) {
     if (event.keyCode == 13 || event.which == 13)
         newPlayerSubmit();
-});
-
-socket.on('io', function() {
-  console.log('hello');
 });
 
 socket.on('new player confirmation', function(newPlayer) {
@@ -296,42 +292,12 @@ Game Vars
 let drawing;
 let cursorMode;
 
-let entitiesCache = {};
-
-let targetEntity = {
-  id: '',
-  x: 0,
-  y: 0,
-  offsetX: 0,
-  offsetY: 0,
-  active: false,
-  gridSpacing: 0,
-  isGlobalObject: false,
-  isOverInventory: false,
-}
-
-const tableZIndex = 1;
-const activeZIndex = 999;
-const inventoryZIndex = 1001;
-
 /**
 
 Player Mouse Events
 
 **/
 
-
-$(document).on('mousedown', '.entity', function(evt) {
-	if (evt.which == 1) {
-		//left click event
-    targetEntity.id = $(evt.target).attr('id');
-    
-		targetEntity.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
-		targetEntity.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
-    
-    socket.emit('pickup entity', {username: playerInfo.username, entityID: targetEntity.id});
-	}
-});
 
 $(document).on('mousedown', '#drawing_area', function(evt) {
 	if (evt.which == 1 && (cursorMode == 'pencil' || cursorMode == 'eraser')) {
@@ -348,33 +314,6 @@ $(document).on('touchstart', '#drawing_area', function(evt) {
 });
 
 $(window).mousemove(function (evt) {
-  if (targetEntity.active) {
-    let scrollLeft = $('#table_container').scrollLeft();
-    let scrollTop  = $('#table_container').scrollTop();
-    
-    let tableMouseX = (scrollLeft + evt.pageX) / (defaultWidth  * zoomScale) * defaultWidth;
-    let tableMouseY = (scrollTop  + evt.pageY) / (defaultHeight * zoomScale) * defaultWidth;
-    
-		targetEntity.x = tableMouseX - targetEntity.offsetX; //TODO offset
-		targetEntity.y = tableMouseY - targetEntity.offsetY;
-    
-    if (targetEntity.gridSpacing > 0 && !targetEntity.isOverInventory) {
-      targetEntity.x = Math.round(targetEntity.x / targetEntity.gridSpacing) * targetEntity.gridSpacing;
-      targetEntity.y = Math.round(targetEntity.y / targetEntity.gridSpacing) * targetEntity.gridSpacing;
-    }
-
-		//move the card locally on our screen before sending the data to the server.
-		$('#' + targetEntity.id).css('left', targetEntity.x + 'px');
-		$('#' + targetEntity.id).css('top', targetEntity.y + 'px');
-		//next send the card state to the server.
-		socket.emit('move entity', {
-      username: playerInfo.username,
-      entityID: targetEntity.id,
-      x: targetEntity.x,
-      y: targetEntity.y
-    });
-
-	}
 	//move player cursor indicator
 	playerInfo.pointerX = evt.pageX / tableWidth;
 	playerInfo.pointerY = evt.pageY / tableHeight;
@@ -385,18 +324,8 @@ $(window).mousemove(function (evt) {
 	playerInfo.stateChanged = true;
 });
 
-
-
 $(window).mouseup(function(evt) {
-  if (targetEntity.active) {
-    if (targetEntity.isOverInventory) {
-      socket.emit('entity to inventory', {
-        username: playerInfo.id,
-        entityID: targetEntity.id
-      });
-    }
-    targetEntity.active = false;
-  } else if (drawing) {
+  if (drawing) {
 		var data = {
       fromX: prevDrawPointX,
       fromY: prevDrawPointY,
@@ -440,36 +369,6 @@ setInterval(function() {
 Listen for the sever for states of the deck, chips, and other players.
 
 **/
-
-//listen for the state of the table from server
-socket.on('entity state', function(entities) {
-  for (let id in entities) {
-    let entity = entities[id];
-    
-    if (entitiesCache[id] == undefined) {
-      entitiesCache[id] = entity;
-    }
-    
-    if (entity.onTable) {
-      if (targetEntity.id != id || !targetChip.active) {
-        
-        
-        $('#' + id).css('left', entity.x + 'px');
-    		$('#' + id).css('top', entity.y + 'px');
-      }
-    }
-    
-    entitiesCache[id] = entity; // set the cached entity to the new value
-  }
-});
-
-// if we recieve confirmation that we picked up the entity
-socket.on('pickup entity confirm', function(info) {
-  targetEntity.active = true;
-  targetEntity.gridSpacing = info.gridSpacing;
-  targetEntity.isGlobalObject = info.isGlobalObject;
-  $('#' + targetEntity.id).css('z-index', activeZIndex);
-});
 
 //listen for reset chip call from server
 socket.on('reset chip', function(chipIndex) {
@@ -531,51 +430,4 @@ socket.on('load new wallpaper', function(wallpaper) {
   
   // add the new wallpaper
   $('.table').addClass('poker_table__bg_' + wallpaper.current);
-});
-
-/**
-
-Client Side server commands
-
-*/
-var consoleInputMem = [];
-var memIndex = 0;
-
-$('#console_input').keydown(function(event) {
-  if ((event.keyCode == 13 || event.which == 13) && $('#console_input').val() != '') {
-    let inputText = $('#console_input').val();
-    
-    scmd(inputText);
-    
-    // append the input into memory
-    consoleInputMem.push(inputText);
-    memIndex = consoleInputMem.length - 1;
-    // clear the value of the input area
-    $('#console_input').val('');
-  } else if (event.keyCode == 38 || event.which == 38) {
-    // up arrow pressed
-    if (memIndex >= 0) {
-      $('#console_input').val(consoleInputMem[memIndex]);
-      memIndex--;
-    }
-  } else if (event.keyCode == 40 || event.which == 40) {
-    // down arrow pressed
-    if (memIndex < consoleInputMem.length) {
-      $('#console_input').val(consoleInputMem[memIndex]);
-      memIndex++;
-    }
-  }
-});
-
-function scmd(command) {
-	socket.emit('console command', {command: command, id: playerInfo.id});
-}
-
-socket.on('console response', function(response) {
-	console.log(response);
-  
-  $('.terminal_console').append('<div class="output_line">' + response.replace(/\n/g, '<br>') + '</div><br>');
-  
-  var element = document.getElementById("terminal_console");
-  element.scrollTop = element.scrollHeight;
 });
