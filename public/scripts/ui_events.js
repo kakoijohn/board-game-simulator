@@ -2,8 +2,10 @@ $(document).on('mouseenter', '#ui_tiles', function(evt) {
   if (targEnt.active && targEnt.isGlobalObject) {
     targEnt.isOverInventory = true;
     
+    let htmlID = targEnt.location + '_' + targEnt.id;
+    
     $('#ui_tiles').toggleClass('inventory_area__active', true);
-    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', true);
+    $('#' + htmlID).toggleClass('entity__over_inventory', true);
     
     $('#tiles').append('<div class="item" id="placeholder_item"></div>');
   }
@@ -13,8 +15,10 @@ $(document).on('mouseleave', '#ui_tiles', function(evt) {
   if (targEnt.isOverInventory) {
     targEnt.isOverInventory = false;
     
+    let htmlID = targEnt.location + '_' + targEnt.id;
+    
     $('#ui_tiles').toggleClass('inventory_area__active', false);
-    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', false);
+    $('#' + htmlID).toggleClass('entity__over_inventory', false);
     
     $('#placeholder_item').remove();
   }
@@ -24,8 +28,10 @@ $(document).on('mouseenter', '#ui_inventory', function(evt) {
   if (targEnt.active && !targEnt.isGlobalObject) {
     targEnt.isOverInventory = true;
     
+    let htmlID = targEnt.location + '_' + targEnt.id;
+    
     $('#ui_inventory').toggleClass('inventory_area__active', true);
-    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', true);
+    $('#' + htmlID).toggleClass('entity__over_inventory', true);
     
     $('#inventory').append('<div class="item" id="placeholder_item"></div>');
   }
@@ -35,8 +41,10 @@ $(document).on('mouseleave', '#ui_inventory', function(evt) {
   if (targEnt.isOverInventory) {
     targEnt.isOverInventory = false;
     
+    let htmlID = targEnt.location + '_' + targEnt.id;
+    
     $('#ui_inventory').toggleClass('inventory_area__active', false);
-    $('#' + targEnt.htmlID).toggleClass('entity__over_inventory', false);
+    $('#' + htmlID).toggleClass('entity__over_inventory', false);
     
     $('#placeholder_item').remove();
   }

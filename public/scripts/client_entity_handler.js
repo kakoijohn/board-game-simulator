@@ -3,7 +3,6 @@ let entitiesCache = {};
 // target entity that the user is currently trying to manipulate
 var targEnt = {
   id: '',
-  htmlID: '',
   location: '', // location id
   type: '',
   index: 0,
@@ -36,9 +35,10 @@ socket.on('entity state', function(entities) {
     let entity = entities[id];
     let loc = entity.location;
     
-    if (loc == 1) {
+    if (!entityIsHome(entity)) {
       // if the location is on the table
-      if (targEnt.id != id || !targetChip.active) {
+      if (targEnt.id != id || !targEnt.active) {
+        // updateEntityLocation(entity);
         $('#' + loc + '_' + id).css('left', entity.x + 'px');
     		$('#' + loc + '_' + id).css('top', entity.y + 'px');
       }
@@ -52,7 +52,14 @@ socket.on('entity state', function(entities) {
 socket.on('pickup entity confirm', function() {
   targEnt.active = true;
   targEnt.gridSpacing = getGridSpacing(targEnt.type);
-  $('#' + targEnt.htmlID).css('z-index', activeZIndex);
+  
+  let htmlID = targEnt.location + '_' + targEnt.id;
+  $('#' + htmlID).css('z-index', activeZIndex);
+  
+  if (entityIsHome(targEnt)) {
+    targEnt.location = 'table';
+    updateEntityLocation(targEnt);
+  }
 });
 
 /*
@@ -60,20 +67,32 @@ Entity events on page
 */
 $(document).on('mousedown', '.entity', function(evt) {
 	if (evt.which == 1) {
-		//left click event
-    targEnt.htmlID = $(evt.target).attr('id');
-    let idParts = targEnt.htmlID.split('_');
-    targEnt.id = idParts[1] + '_' + idParts[2];
-    targEnt.location = idParts[0];
-    targEnt.type = idParts[1];
-    targEnt.index = parseInt(idParts[2]);
-    
-		targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
-		targEnt.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
+		setTargetEntity(evt, 'table');
     
     socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
 	}
 });
+
+$(document).on('mousedown', '.item', function(evt) {
+  if (evt.which == 1) {
+    setTargetEntity(evt);
+    
+    socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
+  }
+});
+
+function setTargetEntity(evt, source) {
+  let htmlID = $(evt.target).attr('id');
+  let idParts = htmlID.split('_');
+  
+  targEnt.id = idParts[1] + '_' + idParts[2];
+  targEnt.location = idParts[0];
+  targEnt.type = idParts[1];
+  targEnt.index = parseInt(idParts[2]);
+  
+  targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
+  targEnt.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
+}
 
 $(window).mousemove(function (evt) {
   if (targEnt.active) {
@@ -90,10 +109,12 @@ $(window).mousemove(function (evt) {
       targEnt.x = Math.round(targEnt.x / targEnt.gridSpacing) * targEnt.gridSpacing;
       targEnt.y = Math.round(targEnt.y / targEnt.gridSpacing) * targEnt.gridSpacing;
     }
+    
+    let htmlID = targEnt.location + '_' + targEnt.id;
 
 		//move the card locally on our screen before sending the data to the server.
-		$('#' + targEnt.htmlID).css('left', targEnt.x + 'px');
-		$('#' + targEnt.htmlID).css('top', targEnt.y + 'px');
+		$('#' + htmlID).css('left', targEnt.x + 'px');
+		$('#' + htmlID).css('top', targEnt.y + 'px');
 		//next send the card state to the server.
 		socket.emit('move entity', {
       username: playerInfo.username,

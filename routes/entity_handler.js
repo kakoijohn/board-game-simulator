@@ -62,7 +62,6 @@ function simplifyEntity(entity) {
     type: entity.type,
     x: entity.x,
     y: entity.y,
-    canStack: entity.canStack,
     location: entity.location,
     owner: entity.owner,
   };

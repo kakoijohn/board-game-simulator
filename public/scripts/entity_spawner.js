@@ -59,8 +59,38 @@ function spawnEntityAtHome(entity, isVisible) {
 }
 
 // swap the entity from the table to the hand
-function swapEntityLocation(entity) {
+function updateEntityLocation(entity) {
+  let location = entity.location;
   
+  let homeLocIndex = config.entity_types[entity.type].homeLoc;
+  let homeLoc = config.locations[homeLocIndex].name;
+  
+  if (location == 'table') {
+    // if the location is the table, move it to home
+    entityToTable(entity, homeLoc);
+  } else {
+    // if the location is home, move it to the table
+    entityToHome(entity, homeLoc);
+  }
+}
+
+function entityToTable(entity, homeLoc) {
+  $('#' + 'table_' + entity.id).css('display', '');
+  $('#' + homeLoc + '_' + entity.id).css('display', 'none');
+}
+
+function entityToHome(entity, homeLoc) {
+  $('#' + 'table_' + entity.id).css('display', 'none');
+  $('#' + homeLoc + '_' + entity.id).css('display', '');
+}
+
+function entityIsHome(entity) {
+  let location = entity.location;
+  
+  let homeLocIndex = config.entity_types[entity.type].homeLoc;
+  let homeLoc = config.locations[homeLocIndex].name;
+  
+  return (location == homeLoc);
 }
 
 function despawnAllEntities() {
