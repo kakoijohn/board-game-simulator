@@ -66,3 +66,7 @@ function simplifyEntity(entity) {
     owner: entity.owner,
   };
 }
+
+exports.getTableLoc = function() {
+  return 1;
+}

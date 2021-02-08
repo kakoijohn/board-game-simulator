@@ -1,6 +1,6 @@
-$(document).on('mouseenter', '#ui_tiles', function(evt) {
-  if (targEnt.active && targEnt.isGlobalObject) {
-    targEnt.isOverInventory = true;
+$(document).on('mouseenter', '#ui_inventory', function(evt) {
+  if (targEnt.active && ) {
+    targEnt.isOverHome = true;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
     
@@ -11,9 +11,9 @@ $(document).on('mouseenter', '#ui_tiles', function(evt) {
   }
 });
 
-$(document).on('mouseleave', '#ui_tiles', function(evt) {
-  if (targEnt.isOverInventory) {
-    targEnt.isOverInventory = false;
+$(document).on('mouseleave', '#ui_inventory', function(evt) {
+  if (targEnt.isOverHome) {
+    targEnt.isOverHome = false;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
     
@@ -24,9 +24,9 @@ $(document).on('mouseleave', '#ui_tiles', function(evt) {
   }
 });
 
-$(document).on('mouseenter', '#ui_inventory', function(evt) {
+$(document).on('mouseenter', '#ui_backpack', function(evt) {
   if (targEnt.active && !targEnt.isGlobalObject) {
-    targEnt.isOverInventory = true;
+    targEnt.isOverHome = true;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
     
@@ -37,9 +37,9 @@ $(document).on('mouseenter', '#ui_inventory', function(evt) {
   }
 });
 
-$(document).on('mouseleave', '#ui_inventory', function(evt) {
-  if (targEnt.isOverInventory) {
-    targEnt.isOverInventory = false;
+$(document).on('mouseleave', '#ui_backpack', function(evt) {
+  if (targEnt.isOverHome) {
+    targEnt.isOverHome = false;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
     

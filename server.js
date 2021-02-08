@@ -100,6 +100,11 @@ io.on('connection', function(socket) {
   socket.on('pickup entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {
+        entities[info.entityID].location = entityHandler.getTableLoc();
+        entities[info.entityID].stateChange = true;
+        
+        entityStateChange = true;
+        
         socket.emit('pickup entity confirm');
       }
     }
@@ -118,11 +123,10 @@ io.on('connection', function(socket) {
     
   });
   
-  socket.on('entity to inventory', function(info) {
+  socket.on('entity to home', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {
-        entities[info.entityID].onTable = false;
-        entities[info.entityID].stateChange = true;
+        entities[info.entityID].location = entities[info.entityID].homeLoc;
         
         entityStateChange = true;
       }

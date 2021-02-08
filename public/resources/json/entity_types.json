@@ -1,7 +1,8 @@
 {
   "entity_types": {
-    "landTile": {
-      "type": "landTile",
+    "0": {
+      "type": 0,
+      "typeName": "land tile",
       "gridSpacing": 100,
       "hasReverse": true,
       "canStack": true,
@@ -26,8 +27,9 @@
       ],
       "reverse": "/resources/tiles/tile_top/land_tile_top.svg"
     },
-    "startingTile": {
-      "type": "startingTile",
+    "1": {
+      "type": 1,
+      "typeName": "starting tile",
       "gridSpacing": 100,
       "hasReverse": true,
       "canStack": true,
@@ -42,8 +44,9 @@
       ],
       "reverse": "/resources/tiles/tile_top/starting_tile_top.svg"
     },
-    "meeple": {
-      "type": "meeple",
+    "2": {
+      "type": 2,
+      "typeName": "meeple",
       "gridSpacing": 0,
       "hasReverse": false,
       "canStack": false,
@@ -68,12 +71,11 @@
     "stateChange": false
   },
   "default_entities": [
-    "landTile",
-    "startingTile"
+    0,1
   ],
   "locations": [
     {
-      "name": "home",
+      "refName": "home",
       "index": 0,
       "height": 0,
       "width": 0,
@@ -81,35 +83,35 @@
       "comment": "this is whatever the home var of that entity is set to"
     },
     {
-      "name": "table",
+      "refName": "table",
       "index": 1,
       "height": 0,
       "width": 0,
       "shared": true
     },
     {
-      "name": "inventory",
+      "refName": "inventory",
       "index": 2,
       "height": 1,
       "width": 2,
       "shared": true
     },
     {
-      "name": "backpack",
+      "refName": "backpack",
       "index": 3,
       "height": 1,
       "width": 5,
       "shared": false
     },
     {
-      "name": "trash",
+      "refName": "trash",
       "index": 4,
       "height": 0,
       "width": 0,
       "shared": true
     },
     {
-      "name": "purgatory",
+      "refName": "purgatory",
       "index": 5,
       "height": 0,
       "width": 0,

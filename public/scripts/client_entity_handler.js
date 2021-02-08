@@ -3,16 +3,16 @@ let entitiesCache = {};
 // target entity that the user is currently trying to manipulate
 var targEnt = {
   id: '',
-  location: '', // location id
-  type: '',
-  index: 0,
+  location: -1, // location number
+  type: -1, // type of entity number
+  index: 0, // index of that entity type
   x: 0,
   y: 0,
   offsetX: 0,
   offsetY: 0,
   active: false,
   gridSpacing: 0,
-  isOverInventory: false,
+  isOverHome: false,
 };
 
 const tableZIndex = 1;
@@ -35,13 +35,19 @@ socket.on('entity state', function(entities) {
     let entity = entities[id];
     let loc = entity.location;
     
+    if (entitiesCache[id].location != loc) {
+      updateEntityLocation(entity);
+    }
+    
     if (!entityIsHome(entity)) {
       // if the location is on the table
       if (targEnt.id != id || !targEnt.active) {
         // updateEntityLocation(entity);
-        $('#' + loc + '_' + id).css('left', entity.x + 'px');
-    		$('#' + loc + '_' + id).css('top', entity.y + 'px');
+        $('#table_' + id).css('left', entity.x + 'px');
+    		$('#table_' + id).css('top', entity.y + 'px');
       }
+    } else {
+      
     }
     
     entitiesCache[id] = entity; // set the cached entity to the new value
@@ -57,7 +63,7 @@ socket.on('pickup entity confirm', function() {
   $('#' + htmlID).css('z-index', activeZIndex);
   
   if (entityIsHome(targEnt)) {
-    targEnt.location = 'table';
+    targEnt.location = 1;
     updateEntityLocation(targEnt);
   }
 });
@@ -67,7 +73,7 @@ Entity events on page
 */
 $(document).on('mousedown', '.entity', function(evt) {
 	if (evt.which == 1) {
-		setTargetEntity(evt, 'table');
+		setTargetEntity(evt);
     
     socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
 	}
@@ -81,13 +87,13 @@ $(document).on('mousedown', '.item', function(evt) {
   }
 });
 
-function setTargetEntity(evt, source) {
+function setTargetEntity(evt) {
   let htmlID = $(evt.target).attr('id');
   let idParts = htmlID.split('_');
   
   targEnt.id = idParts[1] + '_' + idParts[2];
-  targEnt.location = idParts[0];
-  targEnt.type = idParts[1];
+  targEnt.location = parseInt(idParts[0]);
+  targEnt.type = parseInt(idParts[1]);
   targEnt.index = parseInt(idParts[2]);
   
   targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
@@ -105,11 +111,11 @@ $(window).mousemove(function (evt) {
 		targEnt.x = tableMouseX - targEnt.offsetX; //TODO offset
 		targEnt.y = tableMouseY - targEnt.offsetY;
     
-    if (targEnt.gridSpacing > 0 && !targEnt.isOverInventory) {
+    if (targEnt.gridSpacing > 0 && !targEnt.isOverHome) {
       targEnt.x = Math.round(targEnt.x / targEnt.gridSpacing) * targEnt.gridSpacing;
       targEnt.y = Math.round(targEnt.y / targEnt.gridSpacing) * targEnt.gridSpacing;
     }
-    
+
     let htmlID = targEnt.location + '_' + targEnt.id;
 
 		//move the card locally on our screen before sending the data to the server.
@@ -128,8 +134,8 @@ $(window).mousemove(function (evt) {
 
 $(window).mouseup(function(evt) {
   if (targEnt.active) {
-    if (targEnt.isOverInventory) {
-      socket.emit('entity to inventory', {
+    if (targEnt.isOverHome) {
+      socket.emit('entity to home', {
         username: playerInfo.id,
         entityID: targEnt.id
       });

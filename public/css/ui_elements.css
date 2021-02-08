@@ -10,7 +10,7 @@
   grid-template-areas:
     ". header header header header header header ."
     ". . . . . . . ."
-    ". tiles . hand hand . tools ."
+    ". inventory . hand hand . tools ."
     ". . . . . . . .";
 }
 
@@ -138,7 +138,6 @@
   border-radius: 10px;
 }
 
-
 .icon_grid {
   display: grid;
   z-index: var(--ui-z-index);
@@ -149,11 +148,11 @@
   grid-column-gap: 5px;
 }
 
-#ui_tiles {
-  grid-area: tiles;
+#ui_inventory {
+  grid-area: inventory;
 }
 
-#ui_tiles .inventory_contents {
+#ui_inventory .inventory_contents {
   grid-template-columns: repeat(auto-fill, 74px);
   grid-template-rows: repeat(auto-fill, 74px);
   grid-auto-rows: minmax(73px, 73px);

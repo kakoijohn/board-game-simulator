@@ -1,9 +1,17 @@
 let config;
+let tableLoc = -1;
 // load the entity_types config file into json
 $(document).ready(function() {
   $.getJSON("resources/json/entity_types.json", function(json) {
     // console.log(json);
     config = json;
+    
+    for (let i = 0; i < config.locations.length; i++) {
+      if (config.locations[i].refName == 'table') {
+        tableLoc = i;
+        break;
+      }
+    }
   });
 });
 
@@ -17,20 +25,22 @@ function loadEntities(entities) {
 }
 
 function spawnNewEntity(entity) {
-  spawnEntityOnTable(entity, false);
-  spawnEntityAtHome(entity, true);
+  let entityOnTable = (entity.location == tableLoc);
+  spawnEntityOnTable(entity, entityOnTable);
+  spawnEntityAtHome(entity, !entityOnTable);
 }
 
 function spawnEntityOnTable(entity, isVisible) {
   let index = entity.index;
-  let loc = config.locations[1].name;
+  let loc = tableLoc;
+  let locName = config.locations[loc].refName;
   let htmlID = loc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
   let width  = config.entity_types[entity.type].width;
   let height = config.entity_types[entity.type].height;
   
-  $('#table').append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
+  $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
   $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
   $('#' + htmlID).css('width',  width);
   $('#' + htmlID).css('height', height);
@@ -43,13 +53,13 @@ function spawnEntityOnTable(entity, isVisible) {
 
 function spawnEntityAtHome(entity, isVisible) {
   let index = entity.index;
-  let homeLocIndex = config.entity_types[entity.type].homeLoc;
-  let homeLoc = config.locations[homeLocIndex].name;
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  let homeLocName = config.locations[homeLoc].refName;
   let htmlID = homeLoc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
   
-  $('#' + homeLoc).append('<div class=\"item\" id=\"' + htmlID +  '\">'
+  $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
                           + '<div class=\"num_box\"></div></div>');
   
   $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
@@ -61,11 +71,8 @@ function spawnEntityAtHome(entity, isVisible) {
 // swap the entity from the table to the hand
 function updateEntityLocation(entity) {
   let location = entity.location;
-  
-  let homeLocIndex = config.entity_types[entity.type].homeLoc;
-  let homeLoc = config.locations[homeLocIndex].name;
-  
-  if (location == 'table') {
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  if (location == tableLoc) {
     // if the location is the table, move it to home
     entityToTable(entity, homeLoc);
   } else {
@@ -75,22 +82,20 @@ function updateEntityLocation(entity) {
 }
 
 function entityToTable(entity, homeLoc) {
-  $('#' + 'table_' + entity.id).css('display', '');
-  $('#' + homeLoc + '_' + entity.id).css('display', 'none');
+  $('#' + tableLoc + '_' + entity.id).css('display', '');
+  $('#' + homeLoc  + '_' + entity.id).css('display', 'none');
 }
 
 function entityToHome(entity, homeLoc) {
-  $('#' + 'table_' + entity.id).css('display', 'none');
-  $('#' + homeLoc + '_' + entity.id).css('display', '');
+  $('#' + tableLoc + '_' + entity.id).css('display', 'none');
+  $('#' + homeLoc  + '_' + entity.id).css('display', '');
 }
 
 function entityIsHome(entity) {
   let location = entity.location;
+  let homeLoc = config.entity_types[entity.type].homeLoc;
   
-  let homeLocIndex = config.entity_types[entity.type].homeLoc;
-  let homeLoc = config.locations[homeLocIndex].name;
-  
-  return (location == homeLoc);
+  return (location == homeLoc || location == 0);
 }
 
 function despawnAllEntities() {
