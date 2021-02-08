@@ -36,7 +36,7 @@ exports.loadDefaultEntities = function() {
 
 exports.getChangedEntities = function(entities) {
   let changedEntities = {};
-  for (var id in entities) {
+  for (let id in entities) {
     if (entities[id].stateChange) {
       changedEntities[id] = simplifyEntity(entities[id]);
       entities[id].stateChange = false;
@@ -48,7 +48,7 @@ exports.getChangedEntities = function(entities) {
 
 exports.getAllSimpEntities = function(entities) {
   let cleanEntities = {};
-  for (var id in entities) {
+  for (let id in entities) {
     cleanEntities[id] = simplifyEntity(entities[id]);
   }
   

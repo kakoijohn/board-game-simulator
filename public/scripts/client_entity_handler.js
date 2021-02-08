@@ -35,7 +35,7 @@ socket.on('entity state', function(entities) {
     let entity = entities[id];
     let loc = entity.location;
     
-    if (entitiesCache[id].location != loc) {
+    if (entitiesCache != undefined && [id].location != loc) {
       updateEntityLocation(entity);
     }
     
@@ -43,8 +43,7 @@ socket.on('entity state', function(entities) {
       // if the location is on the table
       if (targEnt.id != id || !targEnt.active) {
         // updateEntityLocation(entity);
-        $('#table_' + id).css('left', entity.x + 'px');
-    		$('#table_' + id).css('top', entity.y + 'px');
+        moveEntityOnTable(entity);
       }
     } else {
       
@@ -90,6 +89,11 @@ $(document).on('mousedown', '.item', function(evt) {
 function setTargetEntity(evt) {
   let htmlID = $(evt.target).attr('id');
   let idParts = htmlID.split('_');
+  
+  if (idParts[2] == 's') {
+    // if what we selected is a stack of items
+    idParts[2] = 0;
+  }
   
   targEnt.id = idParts[1] + '_' + idParts[2];
   targEnt.location = parseInt(idParts[0]);
@@ -139,6 +143,8 @@ $(window).mouseup(function(evt) {
         username: playerInfo.id,
         entityID: targEnt.id
       });
+      
+      deactivateHome();
     }
     targEnt.active = false;
   }

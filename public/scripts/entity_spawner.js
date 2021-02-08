@@ -55,17 +55,52 @@ function spawnEntityAtHome(entity, isVisible) {
   let index = entity.index;
   let homeLoc = config.entity_types[entity.type].homeLoc;
   let homeLocName = config.locations[homeLoc].refName;
-  let htmlID = homeLoc + '_' + entity.id;
-  let filePath = config.entity_types[entity.type].path;
-  let fileName = config.entity_types[entity.type].files[index];
+  let htmlID = '';
   
-  $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
-                          + '<div class=\"num_box\"></div></div>');
+  let file = '';
+  let reversePath = config.entity_types[entity.type].reverse;
+  if (reversePath != undefined && reversePath != '') {
+    // if the entity has a reverse side, make the background image
+    // the reverse while it is at home.
+    file = reversePath;
+  } else {
+    // else make the background image the same as when its on the table
+    let filePath = config.entity_types[entity.type].path;
+    let fileName = config.entity_types[entity.type].files[index];
+    
+    file = filePath + fileName;
+  }
   
-  $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
+  let canStack = config.entity_types[entity.type].canStack;
+  
+  if (canStack) {
+    htmlID = homeLoc + '_' + entity.type + '_s'; // s for stack
+    
+    if (index == 0) {
+      // if we are the first in the stack
+      $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
+                              + '<div class=\"num_box\"><span>' + (index + 1)
+                              + '</span></div></div>');
+      $('#' + htmlID).css('background-image', 'url(' + file + ')');
+    } else {
+      $('#' + htmlID + ' .num_box span').text((index + 1));
+    }
+  } else {
+    htmlID = homeLoc + '_' + entity.id;
+    
+    $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
+                            + '<div class=\"num_box\"></div></div>');
+                                                
+    $('#' + htmlID).css('background-image', 'url(' + file + ')');
+  }
   
   if (!isVisible)
     $('#' + htmlID).css('display', 'none');
+}
+
+function moveEntityOnTable(entity) {
+  $('#' + tableLoc + '_' + entity.id).css('left', entity.x + 'px');
+  $('#' + tableLoc + '_' + entity.id).css('top', entity.y + 'px');
 }
 
 // swap the entity from the table to the hand
@@ -96,6 +131,12 @@ function entityIsHome(entity) {
   let homeLoc = config.entity_types[entity.type].homeLoc;
   
   return (location == homeLoc || location == 0);
+}
+
+function entityIsOverHome(entity, source) {
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  
+  return (homeLoc == source);
 }
 
 function despawnAllEntities() {

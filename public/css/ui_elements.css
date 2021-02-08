@@ -10,7 +10,7 @@
   grid-template-areas:
     ". header header header header header header ."
     ". . . . . . . ."
-    ". inventory . hand hand . tools ."
+    ". inventory . backpack backpack . tools ."
     ". . . . . . . .";
 }
 
@@ -158,8 +158,8 @@
   grid-auto-rows: minmax(73px, 73px);
 }
 
-#ui_inventory {
-  grid-area: hand;
+#ui_backpack {
+  grid-area: backpack;
 }
 
 #ui_tools {

@@ -102,7 +102,6 @@ io.on('connection', function(socket) {
       if (userEntityPermission(info.username, info.entityID)) {
         entities[info.entityID].location = entityHandler.getTableLoc();
         entities[info.entityID].stateChange = true;
-        
         entityStateChange = true;
         
         socket.emit('pickup entity confirm');
@@ -116,7 +115,6 @@ io.on('connection', function(socket) {
         entities[info.entityID].x = info.x;
         entities[info.entityID].y = info.y;
         entities[info.entityID].stateChange = true;
-        
         entityStateChange = true;
       }
     }
@@ -127,7 +125,7 @@ io.on('connection', function(socket) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {
         entities[info.entityID].location = entities[info.entityID].homeLoc;
-        
+        entities[info.entityID].stateChange = true;
         entityStateChange = true;
       }
     }
@@ -169,7 +167,7 @@ setInterval(function() {
     playerStateChange = false;
   }
   if (entityStateChange) {
-    let changedEntities = entityHandler.getChangedEntities();
+    let changedEntities = entityHandler.getChangedEntities(entities);
     io.sockets.emit('entity state', changedEntities);
     entityStateChange = false;
   }

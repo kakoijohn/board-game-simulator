@@ -1,31 +1,8 @@
+const inventoryIndex = 2; // TODO update these variables to load from JSON config
+const backpackIndex = 3; // TODO update ^
+
 $(document).on('mouseenter', '#ui_inventory', function(evt) {
-  if (targEnt.active && ) {
-    targEnt.isOverHome = true;
-    
-    let htmlID = targEnt.location + '_' + targEnt.id;
-    
-    $('#ui_tiles').toggleClass('inventory_area__active', true);
-    $('#' + htmlID).toggleClass('entity__over_inventory', true);
-    
-    $('#tiles').append('<div class="item" id="placeholder_item"></div>');
-  }
-});
-
-$(document).on('mouseleave', '#ui_inventory', function(evt) {
-  if (targEnt.isOverHome) {
-    targEnt.isOverHome = false;
-    
-    let htmlID = targEnt.location + '_' + targEnt.id;
-    
-    $('#ui_tiles').toggleClass('inventory_area__active', false);
-    $('#' + htmlID).toggleClass('entity__over_inventory', false);
-    
-    $('#placeholder_item').remove();
-  }
-});
-
-$(document).on('mouseenter', '#ui_backpack', function(evt) {
-  if (targEnt.active && !targEnt.isGlobalObject) {
+  if (targEnt.active && entityIsOverHome(targEnt, inventoryIndex)) {
     targEnt.isOverHome = true;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
@@ -37,18 +14,42 @@ $(document).on('mouseenter', '#ui_backpack', function(evt) {
   }
 });
 
-$(document).on('mouseleave', '#ui_backpack', function(evt) {
+$(document).on('mouseleave', '#ui_inventory', function(evt) {
   if (targEnt.isOverHome) {
-    targEnt.isOverHome = false;
+    deactivateHome();
+  }
+});
+
+$(document).on('mouseenter', '#ui_backpack', function(evt) {
+  if (targEnt.active && entityIsOverHome(targEnt, backpackIndex)) {
+    targEnt.isOverHome = true;
     
     let htmlID = targEnt.location + '_' + targEnt.id;
     
-    $('#ui_inventory').toggleClass('inventory_area__active', false);
-    $('#' + htmlID).toggleClass('entity__over_inventory', false);
+    $('#ui_backpack').toggleClass('inventory_area__active', true);
+    $('#' + htmlID).toggleClass('entity__over_inventory', true);
     
-    $('#placeholder_item').remove();
+    $('#backpack').append('<div class="item" id="placeholder_item"></div>');
   }
 });
+
+$(document).on('mouseleave', '#ui_backpack', function(evt) {
+  if (targEnt.isOverHome) {
+    deactivateHome();
+  }
+});
+
+function deactivateHome() {
+  targEnt.isOverHome = false;
+  
+  let htmlID = targEnt.location + '_' + targEnt.id;
+  
+  $('#ui_inventory').toggleClass('inventory_area__active', false);
+  $('#ui_backpack').toggleClass('inventory_area__active', false);
+  $('#' + htmlID).toggleClass('entity__over_inventory', false);
+  
+  $('#placeholder_item').remove();
+}
 
 
 /**
