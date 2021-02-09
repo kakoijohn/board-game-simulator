@@ -62,6 +62,7 @@
   "default_entity_vars": {
     "id": "",
     "index": 0,
+    "position": 0,
     "x": 0,
     "y": 0,
     "location": 0,

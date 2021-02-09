@@ -35,18 +35,16 @@ socket.on('entity state', function(entities) {
     let entity = entities[id];
     let loc = entity.location;
     
-    if (entitiesCache != undefined && [id].location != loc) {
-      updateEntityLocation(entity);
-    }
-    
-    if (!entityIsHome(entity)) {
-      // if the location is on the table
-      if (targEnt.id != id || !targEnt.active) {
-        // updateEntityLocation(entity);
-        moveEntityOnTable(entity);
+    if (targEnt.id != id || !targEnt.active) {
+      if (entitiesCache != undefined) {
+        if (entitiesCache[id].location != loc) {
+          updateEntityLocation(entity);
+        }
       }
-    } else {
-      
+      if (!entityIsHome(entity)) {
+        // if the location is on the table
+        moveEntity(entity);
+      }
     }
     
     entitiesCache[id] = entity; // set the cached entity to the new value
@@ -55,8 +53,18 @@ socket.on('entity state', function(entities) {
 
 // if we recieve confirmation that we picked up the entity
 socket.on('pickup entity confirm', function() {
+  activateEntity('');
+});
+
+socket.on('pickup stack confirm', function(entityID) {
+  activateEntity(entityID);
+});
+
+function activateEntity(entityID) {
   targEnt.active = true;
   targEnt.gridSpacing = getGridSpacing(targEnt.type);
+  if (entityID != '')
+    targEnt.id = entityID;
   
   let htmlID = targEnt.location + '_' + targEnt.id;
   $('#' + htmlID).css('z-index', activeZIndex);
@@ -65,7 +73,7 @@ socket.on('pickup entity confirm', function() {
     targEnt.location = 1;
     updateEntityLocation(targEnt);
   }
-});
+}
 
 /*
 Entity events on page
@@ -82,7 +90,15 @@ $(document).on('mousedown', '.item', function(evt) {
   if (evt.which == 1) {
     setTargetEntity(evt);
     
-    socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
+    if (targEnt.index == 's') {
+      socket.emit('pickup top entity on stack', {
+        username: playerInfo.username,
+        entityType: targEnt.type
+      });
+    } else {
+      socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
+    }
+    
   }
 });
 
@@ -90,16 +106,11 @@ function setTargetEntity(evt) {
   let htmlID = $(evt.target).attr('id');
   let idParts = htmlID.split('_');
   
-  if (idParts[2] == 's') {
-    // if what we selected is a stack of items
-    idParts[2] = 0;
-  }
-  
   targEnt.id = idParts[1] + '_' + idParts[2];
-  targEnt.location = parseInt(idParts[0]);
-  targEnt.type = parseInt(idParts[1]);
-  targEnt.index = parseInt(idParts[2]);
-  
+  targEnt.location = idParts[0];
+  targEnt.type = idParts[1];
+  targEnt.index = idParts[2];
+
   targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
   targEnt.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
 }

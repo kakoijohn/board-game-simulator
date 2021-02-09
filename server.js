@@ -109,6 +109,20 @@ io.on('connection', function(socket) {
     }
   });
   
+  socket.on('pickup top entity on stack', function(info) {
+    if (players[info.username] != undefined) {
+      let entityID = entityHandler.getTopEntityInStack(entities, info.entityType);
+      
+      if (entityID != -1 && userEntityPermission(info.username, entityID)) {
+        entities[entityID].location = entityHandler.getTableLoc();
+        entities[entityID].stateChange = true;
+        entityStateChange = true;
+        
+        socket.emit('pickup stack confirm', entityID);
+      }
+    }
+  });
+  
   socket.on('move entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.username] != undefined) {
       if (userEntityPermission(info.username, info.entityID)) {

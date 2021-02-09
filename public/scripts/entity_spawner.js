@@ -25,16 +25,15 @@ function loadEntities(entities) {
 }
 
 function spawnNewEntity(entity) {
-  let entityOnTable = (entity.location == tableLoc);
-  spawnEntityOnTable(entity, entityOnTable);
-  spawnEntityAtHome(entity, !entityOnTable);
+  spawnEntityOnTable(entity);
+  spawnEntityAtHome(entity);
 }
 
-function spawnEntityOnTable(entity, isVisible) {
+function spawnEntityOnTable(entity) {
   let index = entity.index;
-  let loc = tableLoc;
-  let locName = config.locations[loc].refName;
-  let htmlID = loc + '_' + entity.id;
+  let locName = config.locations[tableLoc].refName;
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  let htmlID = tableLoc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
   let width  = config.entity_types[entity.type].width;
@@ -47,11 +46,11 @@ function spawnEntityOnTable(entity, isVisible) {
   $('#' + htmlID).css('left', entity.x + 'px');
   $('#' + htmlID).css('top',  entity.y + 'px');
   
-  if (!isVisible)
+  if (entity.location != tableLoc)
     $('#' + htmlID).css('display', 'none');
 }
 
-function spawnEntityAtHome(entity, isVisible) {
+function spawnEntityAtHome(entity) {
   let index = entity.index;
   let homeLoc = config.entity_types[entity.type].homeLoc;
   let homeLocName = config.locations[homeLoc].refName;
@@ -76,29 +75,36 @@ function spawnEntityAtHome(entity, isVisible) {
   if (canStack) {
     htmlID = homeLoc + '_' + entity.type + '_s'; // s for stack
     
-    if (index == 0) {
+    if ($('#' + htmlID).length == 0) {
       // if we are the first in the stack
       $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
-                              + '<div class=\"num_box\"><span>' + (index + 1)
-                              + '</span></div></div>');
+                              + '<div class=\"num_box\"><span>0</span></div></div>');
       $('#' + htmlID).css('background-image', 'url(' + file + ')');
-    } else {
-      $('#' + htmlID + ' .num_box span').text((index + 1));
+      
+      $('#' + htmlID).css('display', 'none');
+    } else if (entity.location == homeLoc) {
+      // if our item is at home currently, add one to the stack count
+      let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
+      $('#' + htmlID + ' .num_box span').text(currStackTot + 1);
+      
+      $('#' + htmlID).css('display', '');
     }
   } else {
+    // if the entity cannot be stacked
     htmlID = homeLoc + '_' + entity.id;
     
     $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
                             + '<div class=\"num_box\"></div></div>');
                                                 
     $('#' + htmlID).css('background-image', 'url(' + file + ')');
+    
+    if (entity.location == tableLoc)
+      $('#' + htmlID).css('display', 'none');
   }
   
-  if (!isVisible)
-    $('#' + htmlID).css('display', 'none');
 }
 
-function moveEntityOnTable(entity) {
+function moveEntity(entity) {
   $('#' + tableLoc + '_' + entity.id).css('left', entity.x + 'px');
   $('#' + tableLoc + '_' + entity.id).css('top', entity.y + 'px');
 }
@@ -110,9 +116,17 @@ function updateEntityLocation(entity) {
   if (location == tableLoc) {
     // if the location is the table, move it to home
     entityToTable(entity, homeLoc);
+    if (config.entity_types[entity.type].canStack) {
+      // if the entity is a stack, subtract one from the stack
+      updateEntityStack(-1, entity.type, homeLoc);
+    }
   } else {
     // if the location is home, move it to the table
     entityToHome(entity, homeLoc);
+    if (config.entity_types[entity.type].canStack) {
+      // if the entity is a stack, add one to the stack
+      updateEntityStack(1, entity.type, homeLoc);
+    }
   }
 }
 
@@ -124,6 +138,20 @@ function entityToTable(entity, homeLoc) {
 function entityToHome(entity, homeLoc) {
   $('#' + tableLoc + '_' + entity.id).css('display', 'none');
   $('#' + homeLoc  + '_' + entity.id).css('display', '');
+}
+
+function updateEntityStack(delta, entityType, homeLoc) {
+  let htmlID = homeLoc + '_' + entityType + '_s';
+  
+  let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
+  
+  if (currStackTot + delta <= 0) {
+    $('#' + htmlID).css('display', 'none');
+  } else {
+    $('#' + htmlID).css('display', '');
+  }
+  
+  $('#' + htmlID + ' .num_box span').text(currStackTot + delta);
 }
 
 function entityIsHome(entity) {
