@@ -32,7 +32,7 @@ function loadEntity(i, entityType) {
     hasReverse: entityType.hasReverse,
     canStack: entityType.canStack,
     homeLoc: entityType.homeLoc,
-    location: config.default_entity_vars.location,
+    location: entityType.homeLoc, // spawn the entity at its home by default
     permission: entityType.permission,
     owner: config.default_entity_vars.owner,
     stateChange: true

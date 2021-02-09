@@ -36,7 +36,7 @@ socket.on('entity state', function(entities) {
     let loc = entity.location;
     
     if (targEnt.id != id || !targEnt.active) {
-      if (entitiesCache != undefined) {
+      if (entitiesCache[id] != undefined) {
         if (entitiesCache[id].location != loc) {
           updateEntityLocation(entity);
         }
