@@ -163,7 +163,7 @@
 #ui_inventory .inventory_contents {
   grid-template-columns: repeat(auto-fill, 74px);
   grid-template-rows: repeat(auto-fill, 74px);
-  grid-auto-rows: minmax(73px, 73px);
+  grid-auto-rows: minmax(74px, 74px);
 }
 
 #ui_backpack {
