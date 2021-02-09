@@ -71,25 +71,24 @@ function spawnEntityAtHome(entity) {
   }
   
   let canStack = config.entity_types[entity.type].canStack;
-  
   if (canStack) {
     htmlID = homeLoc + '_' + entity.type + '_s'; // s for stack
     
+    if ($('#' + htmlID).length == 0) {
+      // if we are the first in the stack
+      $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
+      + '<div class=\"num_box\"><span>0</span></div></div>');
+      $('#' + htmlID).css('background-image', 'url(' + file + ')');
+      
+      $('#' + htmlID).css('display', 'none');
+    }
+    
     if (entity.location == homeLoc) {
-      if ($('#' + htmlID).length == 0) {
-        // if we are the first in the stack
-        $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
-        + '<div class=\"num_box\"><span>1</span></div></div>');
-        $('#' + htmlID).css('background-image', 'url(' + file + ')');
-        
-        $('#' + htmlID).css('display', 'none');
-      } else {
-        // if our item is at home currently, add one to the stack count
-        let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
-        $('#' + htmlID + ' .num_box span').text(currStackTot + 1);
-        
-        $('#' + htmlID).css('display', '');
-      }
+      // if our item is at home currently, add one to the stack count
+      let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
+      $('#' + htmlID + ' .num_box span').text(currStackTot + 1);
+      
+      $('#' + htmlID).css('display', '');
     }
   } else {
     // if the entity cannot be stacked
