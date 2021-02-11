@@ -5,26 +5,34 @@ const dbFilePath = '../public/resources/json/entity_types.json';
 var rawData = fs.readFileSync(path.resolve(__dirname, dbFilePath));
 var config = JSON.parse(rawData);
 
-exports.loadDefaultEntities = function() {
+exports.loadDefaultGlobalEntities = function() {
   let entities = {};
   
-  for (let index in config.default_entities) {
-    let id = config.default_entities[index];
+  for (let index in config.default_global_entities) {
+    let id = config.default_global_entities[index];
     let entityType = config.entity_types[id];
-
-    for (let i = 0; i < entityType.length; i++) {
-      entities[entityType.type + '_' + i] = loadEntity(i, entityType);
-    }
+    let elements = config.entity_types[id].elements;
+    
+    loadEntities(entities, id, entityType, elements);
   }
   
   return entities;
 };
 
-function loadEntity(i, entityType) {
+function loadEntities(entities, id, entityType, elements) {
+  for (let i = 0; i < entityType.length * elements; i++) {
+    for (let j = 0; j < elements; j++) {
+      entities[entityType.type + '_' + i + '_' + j] = loadEntity(entityType, i, j);
+    }
+  }
+}
+
+function loadEntity(entityType, i, j) {
   let entity = {
-    id: entityType.type + '_' + i,
+    id: entityType.type + '_' + i + '_' + j,
     index: i,
-    position: i, // position of entity in the stack (if it can stack)
+    position: (i * j) + j, // position of entity in the stack (if it can stack)
+    element: j,
     type: entityType.type,
     x: config.default_entity_vars.x,
     y: config.default_entity_vars.y,
@@ -66,6 +74,7 @@ function simplifyEntity(entity) {
   return {
     id: entity.id,
     index: entity.index,
+    element: entity.element,
     type: entity.type,
     x: entity.x,
     y: entity.y,
@@ -80,20 +89,29 @@ exports.getTableLoc = function() {
 
 exports.getTopEntityInStack = function(entities, type) {
   let length = config.entity_types[type].length;
-  let topIndex = length;
+  let elements = config.entity_types[type].elements;
+  let topIndex = {
+    val: length,
+    i: 0,
+    j: 0
+  }
   
   for (let i = 0; i < length; i++) {
-    let entity = entities[type + '_' + i];
-    
-    if (entity.location == entity.homeLoc || entity.location == 0) {
-      if (entity.position < topIndex) {
-        topIndex = entity.position;
+    for (let j = 0; j < elements; j++) {
+      let entity = entities[type + '_' + i + '_' + j];
+      
+      if (entity.location == entity.homeLoc || entity.location == 0) {
+        if (entity.position < topIndex.val) {
+          topIndex.val = entity.position;
+          topIndex.i = i;
+          topIndex.j = j;
+        }
       }
     }
   }
   
-  if (topIndex == length)
+  if (topIndex.val == length)
     return -1;
   else
-    return type + '_' + topIndex;
+    return type + '_' + topIndex.i + '_' + topIndex.j;
 };

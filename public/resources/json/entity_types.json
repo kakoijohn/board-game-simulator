@@ -24,7 +24,8 @@
         "22x9.svg","22x9.svg","22x9.svg","23x4.svg","23x4.svg","23x4.svg","23x4.svg",
         "24x1.svg"
       ],
-      "reverse": "/resources/tiles/tile_top/land_tile_top.svg"
+      "reverse": "/resources/tiles/tile_top/land_tile_top.svg",
+      "elements": 1
     },
     "1": {
       "type": 1,
@@ -40,7 +41,8 @@
       "files": [
         "20x4.svg"
       ],
-      "reverse": "/resources/tiles/tile_top/starting_tile_top.svg"
+      "reverse": "/resources/tiles/tile_top/starting_tile_top.svg",
+      "elements": 2
     },
     "2": {
       "type": 2,
@@ -56,7 +58,8 @@
       "path": "/resources/tiles/",
       "files": [
         "meeple.svg"
-      ]
+      ],
+      "elements": 7
     }
   },
   "default_entity_vars": {
@@ -69,8 +72,11 @@
     "owner": "",
     "stateChange": false
   },
-  "default_entities": [
-    0,1
+  "default_global_entities": [
+    1
+  ],
+  "default_player_entities": [
+    2
   ],
   "locations": [
     {

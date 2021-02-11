@@ -6,6 +6,7 @@ var targEnt = {
   location: -1, // location number
   type: -1, // type of entity number
   index: 0, // index of that entity type
+  elements: 0,
   x: 0,
   y: 0,
   offsetX: 0,
@@ -106,10 +107,11 @@ function setTargetEntity(evt) {
   let htmlID = $(evt.target).attr('id');
   let idParts = htmlID.split('_');
   
-  targEnt.id = idParts[1] + '_' + idParts[2];
+  targEnt.id = idParts[1] + '_' + idParts[2] + '_' + idParts[3];
   targEnt.location = idParts[0];
   targEnt.type = idParts[1];
   targEnt.index = idParts[2];
+  targEnt.elements = idParts[3];
 
   targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
   targEnt.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;

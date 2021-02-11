@@ -26,7 +26,7 @@ server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
   
   console.log('generating default entities');
-  entities = entityHandler.loadDefaultEntities();
+  entities = entityHandler.loadDefaultGlobalEntities();
 });
 
 var players = {};
@@ -163,14 +163,27 @@ io.on('connection', function(socket) {
 });
 
 function userEntityPermission(username, entityID) {
-  if (entities[entityID].permission > 0) {
-    if (players[username].isAdmin) {
+  switch (entities[entityID].permission) {
+    case 0:
+      // no permission restrictions
       return true;
-    } else {
+    case 1:
+      // admin required
+      if (players[username].isAdmin) {
+        return true;
+      } else {
+        return false;
+      }
+    case 2:
+      // belongs to player
+      if (entities[entityID].owner == username) {
+        return true;
+      } else {
+        return false;
+      }
+    default:
+      // any other case, dont allow
       return false;
-    }
-  } else {
-    return true;
   }
 }
 
