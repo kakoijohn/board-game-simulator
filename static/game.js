@@ -245,17 +245,6 @@ $(document).on('touchstart', '#drawing_area', function(evt) {
 		drawing = false;
 });
 
-$(window).mousemove(function (evt) {
-	//move player cursor indicator
-	playerInfo.pointerX = evt.pageX / tableWidth;
-	playerInfo.pointerY = evt.pageY / tableHeight;
-
-	$('#' + playerInfo.id).css('left', evt.pageX);
-	$('#' + playerInfo.id).css('top', evt.pageY);
-
-	playerInfo.stateChanged = true;
-});
-
 $(window).mouseup(function(evt) {
   if (drawing) {
 		var data = {

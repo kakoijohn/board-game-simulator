@@ -88,6 +88,14 @@ $(document).on('mousedown', '.entity', function(evt) {
 	}
 });
 
+$(document).on('dblclick', '.entity', function(evt) {
+	if (evt.which == 1) {
+		setTargetEntity(evt);
+    
+    socket.emit('rotate entity', {playerID: playerInfo.id, entityID: targEnt.id});
+	}
+});
+
 $(document).on('mousedown', '.item', function(evt) {
   if (evt.which == 1) {
     setTargetEntity(evt);
@@ -108,17 +116,23 @@ $(document).on('mousedown', '.item', function(evt) {
 $(document).on('mousedown', '.item svg', function(evt) {
   evt.stopImmediatePropagation();
   let id = $(this).closest('.item').attr('id');
-  simulateMousedownEvent(id, evt);
+  simulateMousedownEvent('mousedown', id, evt);
 });
 
 $(document).on('mousedown', '.entity svg', function(evt) {
   evt.stopImmediatePropagation();
   let id = $(this).closest('.entity').attr('id');
-  simulateMousedownEvent(id, evt);
+  simulateMousedownEvent('mousedown', id, evt);
 });
 
-function simulateMousedownEvent(id, evt) {
-  let simEvt = jQuery.Event('mousedown');
+$(document).on('dblclick', '.entity svg', function(evt) {
+  evt.stopImmediatePropagation();
+  let id = $(this).closest('.entity').attr('id');
+  simulateEvent('dblclick', id, evt);
+});
+
+function simulateMousedownEvent(evtName, id, evt) {
+  let simEvt = jQuery.Event(evtName);
   simEvt.which = evt.which;
   simEvt.pageX = evt.pageX;
   simEvt.pageY = evt.pageY;
@@ -142,11 +156,10 @@ function setTargetEntity(evt) {
 
 $(window).mousemove(function (evt) {
   if (targEnt.active) {
-    let scrollLeft = $('#table_container').scrollLeft();
-    let scrollTop  = $('#table_container').scrollTop();
+    let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
     
-    let tableMouseX = (scrollLeft + evt.pageX) / (defaultWidth  * zoomScale) * defaultWidth;
-    let tableMouseY = (scrollTop  + evt.pageY) / (defaultHeight * zoomScale) * defaultWidth;
+    let tableMouseX = scaledCoords.x;
+    let tableMouseY = scaledCoords.y;
     
 		targEnt.x = tableMouseX - targEnt.offsetX; //TODO offset
 		targEnt.y = tableMouseY - targEnt.offsetY;
@@ -171,6 +184,26 @@ $(window).mousemove(function (evt) {
 
 	}
 });
+
+//
+
+/**
+ * convertCoordToScale - scales the given window coordinates to the current scale
+ *
+ * @param  {type} x
+ * @param  {type} y
+ * @return {type}   x, y
+ */
+function convertWindowCoordToScale(x, y) {
+  let scrollLeft = $('#table_container').scrollLeft();
+  
+  let scrollTop  = $('#table_container').scrollTop();
+  
+  let scaleX = (scrollLeft + x) / (defaultWidth  * zoomScale) * defaultWidth;
+  let scaleY = (scrollTop  + y) / (defaultHeight * zoomScale) * defaultWidth;
+  
+  return {x: scaleX, y: scaleY};
+}
 
 $(window).mouseup(function(evt) {
   if (targEnt.active) {

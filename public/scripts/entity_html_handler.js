@@ -6,7 +6,7 @@ $(document).ready(function() {
   $.getJSON("resources/json/entity_types.json", function(json) {
     // console.log(json);
     config = json;
-    
+
     for (let i = 0; i < config.locations.length; i++) {
       if (config.locations[i].refName == 'table') {
         tableLoc = i;
@@ -19,7 +19,7 @@ $(document).ready(function() {
 function loadEntities(entities) {
   for (let id in entities) {
     let entity = entities[id];
-    
+
     if (!entityExistsOnTable(entity)) {
       // if this is a new entity to us, spawn it
       spawnNewEntity(entity);
@@ -39,16 +39,16 @@ function spawnEntityOnTable(entity) {
   let htmlID = tableLoc + '_' + entity.id;
   let filePath = config.entity_types[entity.type].path;
   let fileName = config.entity_types[entity.type].files[index];
-  let width  = config.entity_types[entity.type].width;
+  let width = config.entity_types[entity.type].width;
   let height = config.entity_types[entity.type].height;
-  
-  $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
+
+  $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID + '\"></div>');
   applyBGImage(htmlID, (filePath + fileName), entity.type, entity.owner);
-  $('#' + htmlID).css('width',  width);
+  $('#' + htmlID).css('width', width);
   $('#' + htmlID).css('height', height);
   $('#' + htmlID).css('left', entity.x + 'px');
-  $('#' + htmlID).css('top',  entity.y + 'px');
-  
+  $('#' + htmlID).css('top', entity.y + 'px');
+
   if (entity.location != tableLoc)
     $('#' + htmlID).css('display', 'none');
 }
@@ -59,12 +59,12 @@ function spawnEntityAtHome(entity) {
     // don't spawn a placeholder at home
     return;
   }
-  
+
   let index = entity.index;
   let homeLoc = config.entity_types[entity.type].homeLoc;
   let homeLocName = config.locations[homeLoc].refName;
   let htmlID = '';
-  
+
   let file = '';
   let reversePath = config.entity_types[entity.type].reverse;
   if (reversePath != undefined && reversePath != '') {
@@ -75,50 +75,50 @@ function spawnEntityAtHome(entity) {
     // else make the background image the same as when its on the table
     let filePath = config.entity_types[entity.type].path;
     let fileName = config.entity_types[entity.type].files[index];
-    
+
     file = filePath + fileName;
   }
-  
+
   let canStack = config.entity_types[entity.type].canStack;
   if (canStack) {
     htmlID = homeLoc + '_' + entity.type + '_s'; // s for stack
-    
+
     if ($('#' + htmlID).length == 0) {
       // if we are the first in the stack
-      $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
-      + '<div class=\"num_box\"><span>0</span></div></div>');
-      
+      $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID + '\">' +
+        '<div class=\"num_box\"><span>0</span></div></div>');
+
       applyBGImage(htmlID, file, entity.type, entity.owner);
-      
+
       $('#' + htmlID).css('display', 'none');
     }
-    
+
     if (entity.location == homeLoc) {
       // if our item is at home currently, add one to the stack count
       let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
       $('#' + htmlID + ' .num_box span').text(currStackTot + 1);
-      
+
       $('#' + htmlID).css('display', '');
     }
   } else {
     // if the entity cannot be stacked
     htmlID = homeLoc + '_' + entity.id;
-    
-    $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
-                            + '<div class=\"num_box\"></div></div>');
-    
+
+    $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID + '\">' +
+      '<div class=\"num_box\"></div></div>');
+
     applyBGImage(htmlID, file, entity.type, entity.owner);
-    
+
     if (entity.location == tableLoc)
       $('#' + htmlID).css('display', 'none');
   }
-  
+
 }
 
 function applyBGImage(htmlID, file, type, owner) {
   let editable = config.entity_types[type].editable;
   let editVars = config.entity_types[type].editVars;
-  
+
   if (editable) {
     // if the image itself has any player-specific configurable parameters
     if (rawFileCache[file] == undefined) {
@@ -127,9 +127,9 @@ function applyBGImage(htmlID, file, type, owner) {
       rawFile.send(null);
       rawFileCache[file] = rawFile.responseText;
     }
-    
+
     let fileText = rawFileCache[file];
-    
+
     let fillCol = '';
     let entText = '';
     if (owner == '') {
@@ -139,10 +139,10 @@ function applyBGImage(htmlID, file, type, owner) {
       fillCol = getPlayerColor(owner);
       entText = getPlayerInitials(owner);
     }
-    
-    fileText = fileText.replace(editVars.fill, fillCol);
-    fileText = fileText.replace(editVars.text, entText);
-    
+
+    fileText = fileText.replaceAll(editVars.fill, fillCol);
+    fileText = fileText.replaceAll(editVars.text, entText);
+
     $('#' + htmlID).append(fileText);
   } else {
     // if not, just apply the file as a css background-image
@@ -153,6 +153,8 @@ function applyBGImage(htmlID, file, type, owner) {
 function moveEntity(entity) {
   $('#' + tableLoc + '_' + entity.id).css('left', entity.x + 'px');
   $('#' + tableLoc + '_' + entity.id).css('top', entity.y + 'px');
+
+  $('#' + tableLoc + '_' + entity.id).css('transform', 'rotate(' + entity.rotation + 'deg)');
 }
 
 // swap the entity from the table to the hand
@@ -178,38 +180,38 @@ function updateEntityLocation(entity) {
 
 function entityToTable(entity, homeLoc) {
   $('#' + tableLoc + '_' + entity.id).css('display', '');
-  $('#' + homeLoc  + '_' + entity.id).css('display', 'none');
+  $('#' + homeLoc + '_' + entity.id).css('display', 'none');
 }
 
 function entityToHome(entity, homeLoc) {
   $('#' + tableLoc + '_' + entity.id).css('display', 'none');
-  $('#' + homeLoc  + '_' + entity.id).css('display', '');
+  $('#' + homeLoc + '_' + entity.id).css('display', '');
 }
 
 function updateEntityStack(delta, entityType, homeLoc) {
   let htmlID = homeLoc + '_' + entityType + '_s';
-  
+
   let currStackTot = parseInt($('#' + htmlID + ' .num_box span').text());
-  
+
   if (currStackTot + delta <= 0) {
     $('#' + htmlID).css('display', 'none');
   } else {
     $('#' + htmlID).css('display', '');
   }
-  
+
   $('#' + htmlID + ' .num_box span').text(currStackTot + delta);
 }
 
 function entityIsHome(entity) {
   let location = entity.location;
   let homeLoc = config.entity_types[entity.type].homeLoc;
-  
+
   return (location == homeLoc);
 }
 
 function entityIsOverHome(entity, source) {
   let homeLoc = config.entity_types[entity.type].homeLoc;
-  
+
   return (homeLoc == source);
 }
 
@@ -224,7 +226,7 @@ function getGridSpacing(entityType) {
 
 function canManipulateEntity(entity) {
   let permission = config.entity_types[entity.type].permission;
-  
+
   switch (permission) {
     case 0:
       return true;
@@ -244,4 +246,8 @@ function entityExistsOnTable(entity) {
   } else {
     return true;
   }
+}
+
+function getTableLoc() {
+  return config.locations[tableLoc].refName;
 }

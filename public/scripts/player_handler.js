@@ -29,20 +29,22 @@ socket.on('new player confirmation', function(newPlayer) {
 
 socket.on('new player notification', function(players) {
   playersCache = players;
+	
+	let tableLoc = getTableLoc();
   
 	for (var id in players) {
 		var player = players[id];
 
 		if ($('#' + player.id).length == 0) {
 			//we don't have a player by that id yet, create them on our game board.
-			$('body').append("<div class=\"player player_anim\" id=\"" + player.id +
+			$('#' + tableLoc).append("<div class=\"player player_anim\" id=\"" + player.id +
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
 
-			$('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">"
-                          + player.username + "<div class=\"player_cash\"></div></div>");
-      
-			$('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
-			$('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
+			// $('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">"
+      //                     + player.username + "<div class=\"player_cash\"></div></div>");
+			//
+			// $('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
+			// $('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
 		}
 
 		//toggle animation off for our cursor.
@@ -61,6 +63,18 @@ socket.on('remove user', function(username) {
 	}
 });
 
+socket.on('player state', function(players) {
+	for (var id in players) {
+		var player = players[id];
+		
+		if (id != playerInfo.id) {
+			//if not us we update everyone else's cursor on our screen
+			$('#' + player.id).css('left', player.pointerX);
+			$('#' + player.id).css('top', player.pointerY);
+		}
+	}
+});
+
 function getPlayerColor(id) {
   return playersCache[id].color;
 }
@@ -68,3 +82,15 @@ function getPlayerColor(id) {
 function getPlayerInitials(id) {
   return playersCache[id].initials;
 }
+
+$(window).mousemove(function (evt) {
+	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
+	
+	playerInfo.pointerX = scaledCoords.x;
+	playerInfo.pointerY = scaledCoords.y;
+
+	$('#' + playerInfo.id).css('left', playerInfo.pointerX);
+	$('#' + playerInfo.id).css('top', playerInfo.pointerY);
+
+	playerInfo.stateChanged = true;
+});

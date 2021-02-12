@@ -60,8 +60,8 @@ io.on('connection', function(socket) {
     let initials = userArr[0].charAt(0).toUpperCase();
     if (userArr.length > 1)
       initials += userArr[userArr.length - 1].charAt(0).toUpperCase();
-    
-    console.log('initials: ' + initials);
+    else if (userArr[0].length > 1)
+      initials += userArr[0].charAt(1).toUpperCase();
 
   	if (players[id] == undefined) {
   		//create a new player if that username doesn't exist
@@ -92,11 +92,10 @@ io.on('connection', function(socket) {
   	//callback to client that we have put them into the system.
     socket.emit('new player confirmation', {username, id, color, currentWallpaper});
     //callback to the client with the state of all the entities on the board
-    let simpEntities = entityHandler.getAllSimpEntities(entities);
 
     //tell all clients we have a new player and send a list of all the current players.
     io.sockets.emit('new player notification', players);
-    io.sockets.emit('append new entities', simpEntities);
+    io.sockets.emit('append new entities', entities);
     
     playerStateChange = true;
     entityStateChange = true;
@@ -119,6 +118,20 @@ io.on('connection', function(socket) {
         entityStateChange = true;
         
         socket.emit('pickup entity confirm');
+      }
+    }
+  });
+  
+  socket.on('rotate entity', function(info) {
+    if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
+      if (userEntityPermission(info.playerID, info.entityID)) {
+        let type = entities[info.entityID].type;
+        
+        if (entityHandler.canRotate(type)) {
+          entities[info.entityID].rotation += entityHandler.getRotStep(type);
+          entities[info.entityID].stateChange = true;
+          entityStateChange = true;
+        }
       }
     }
   });
@@ -177,7 +190,7 @@ io.on('connection', function(socket) {
 });
 
 function userEntityPermission(playerID, entityID) {
-  switch (entities[entityID].permission) {
+  switch (entityHandler.getPermissionLvl(entities[entityID].type)) {
     case 0:
       // no permission restrictions
       return true;
@@ -190,7 +203,7 @@ function userEntityPermission(playerID, entityID) {
       }
     case 2:
       // belongs to player
-      if (entities[entityID].owner == playerID) {
+      if (entities[entityID].owner == playerID || players[playerID].isAdmin) {
         return true;
       } else {
         return false;
@@ -216,8 +229,7 @@ setInterval(function() {
 
 //emit the state every 10 seconds regardless of change.
 setInterval(function() {
-  let simpEntities = entityHandler.getAllSimpEntities(entities);
-  io.sockets.emit('entity state', simpEntities);
+  io.sockets.emit('entity state', entities);
 }, 10000);
 
 
