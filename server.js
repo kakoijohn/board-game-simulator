@@ -26,7 +26,7 @@ server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
   
   console.log('generating default entities');
-  entities = entityHandler.loadDefaultEntities();
+  entityHandler.appendDefaultGlobalEntities(entities);
 });
 
 var players = {};
@@ -55,12 +55,21 @@ io.on('connection', function(socket) {
                      + (Math.floor(Math.random() * 256)) + ')';
 
   	var id = username.replace(/[^a-zA-Z0-9]/g, '_');
+    
+    let userArr = username.split(' ');
+    let initials = '';
+    for (let index in userArr) {
+      if (index > 1)
+        break;
+      intials = initials + userArr[index].charAt(0).toUpperCase();
+    }
 
   	if (players[id] == undefined) {
   		//create a new player if that username doesn't exist
   		players[id] = {
   			id: id,
   			username: username,
+        initials: initials,
   			pointerX: 0,
   			pointerY: 0,
   			nametagX: nametagStartX,
@@ -69,7 +78,13 @@ io.on('connection', function(socket) {
         
   			color: color,
   		};
-  	}
+      
+      console.log("Adding new player with username: " + id);
+      console.log("Adding new set of default player entities.");
+      entityHandler.appendDefaultPlayerEntities(entities, id);
+  	} else {
+      console.log("Existing player reconnected with username: " + id);
+    }
 
   	players[id].color = color;
 
@@ -77,12 +92,10 @@ io.on('connection', function(socket) {
     socket.emit('new player confirmation', {username, id, color, currentWallpaper});
     //callback to the client with the state of all the entities on the board
     let simpEntities = entityHandler.getAllSimpEntities(entities);
-    socket.emit('load new entities', simpEntities);
 
     //tell all clients we have a new player and send a list of all the current players.
+    io.sockets.emit('append new entities', simpEntities);
     io.sockets.emit('new player notification', players);
-
-    console.log("Added new player with username: " + id);
     
     playerStateChange = true;
     entityStateChange = true;
@@ -163,14 +176,27 @@ io.on('connection', function(socket) {
 });
 
 function userEntityPermission(username, entityID) {
-  if (entities[entityID].permission > 0) {
-    if (players[username].isAdmin) {
+  switch (entities[entityID].permission) {
+    case 0:
+      // no permission restrictions
       return true;
-    } else {
+    case 1:
+      // admin required
+      if (players[username].isAdmin) {
+        return true;
+      } else {
+        return false;
+      }
+    case 2:
+      // belongs to player
+      if (entities[entityID].owner == username) {
+        return true;
+      } else {
+        return false;
+      }
+    default:
+      // any other case, dont allow
       return false;
-    }
-  } else {
-    return true;
   }
 }
 

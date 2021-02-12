@@ -13,18 +13,7 @@ socket.on('message', function(data) {
 
 socket.on('connect', function() {
   if (socketWasConnected) {
-    $('.player').each(function(index) {
-      $(this).remove();
-    });
-    $('.floating_nametag').each(function(index) {
-      $(this).remove();
-    });
-    $('.tank').each(function(index) {
-      $(this).remove();
-    });
-    $('.cannonball').each(function(index) {
-      $(this).remove();
-    });
+    despawnAllEntities();
 
     var username = $('#dname').val();
   	var color = $('#dcolor').val();

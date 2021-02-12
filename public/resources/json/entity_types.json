@@ -10,6 +10,7 @@
       "width": 100,
       "height": 100,
       "length": 71,
+      "multiplier": 1,
       "path": "/resources/tiles/tile_bottom/",
       "files": [
         "1x4.svg","1x4.svg","1x4.svg","1x4.svg","2x2.svg","2x2.svg","3x1.svg",
@@ -24,7 +25,8 @@
         "22x9.svg","22x9.svg","22x9.svg","23x4.svg","23x4.svg","23x4.svg","23x4.svg",
         "24x1.svg"
       ],
-      "reverse": "/resources/tiles/tile_top/land_tile_top.svg"
+      "reverse": "/resources/tiles/tile_top/land_tile_top.svg",
+      "editable": false
     },
     "1": {
       "type": 1,
@@ -36,11 +38,13 @@
       "width": 100,
       "height": 100,
       "length": 1,
+      "multiplier": 1,
       "path": "/resources/tiles/tile_bottom/",
       "files": [
         "20x4.svg"
       ],
-      "reverse": "/resources/tiles/tile_top/starting_tile_top.svg"
+      "reverse": "/resources/tiles/tile_top/starting_tile_top.svg",
+      "editable": false
     },
     "2": {
       "type": 2,
@@ -53,10 +57,16 @@
       "width": 50,
       "height": 50,
       "length": 1,
+      "multiplier": 7,
       "path": "/resources/tiles/",
       "files": [
         "meeple.svg"
-      ]
+      ],
+      "editable": true,
+      "editVars": {
+        "fill": "%fillvar%",
+        "text": "%textvar%"
+      }
     }
   },
   "default_entity_vars": {
@@ -69,8 +79,11 @@
     "owner": "",
     "stateChange": false
   },
-  "default_entities": [
+  "default_global_entities": [
     0,1
+  ],
+  "default_player_entities": [
+    2
   ],
   "locations": [
     {
@@ -122,6 +135,7 @@
       "0": "no restrictions",
       "1": "admin required",
       "2": "belongs to player"
-    }
+    },
+    "entities": {}
   }
 }

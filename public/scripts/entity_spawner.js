@@ -1,5 +1,5 @@
 let config;
-let tableLoc = -1;
+let tableLoc = 1;
 // load the entity_types config file into json
 $(document).ready(function() {
   $.getJSON("resources/json/entity_types.json", function(json) {
@@ -19,8 +19,10 @@ function loadEntities(entities) {
   for (let id in entities) {
     let entity = entities[id];
     
-    console.log('spawning entity');
-    spawnNewEntity(entity);
+    if (!entityExistsOnTable(entity)) {
+      // if this is a new entity to us, spawn it
+      spawnNewEntity(entity);
+    }
   }
 }
 
@@ -40,7 +42,7 @@ function spawnEntityOnTable(entity) {
   let height = config.entity_types[entity.type].height;
   
   $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
-  $('#' + htmlID).css('background-image', 'url(' + filePath + fileName + ')');
+  applyBGImage(htmlID, (filePath + fileName), entity.type);
   $('#' + htmlID).css('width',  width);
   $('#' + htmlID).css('height', height);
   $('#' + htmlID).css('left', entity.x + 'px');
@@ -51,6 +53,12 @@ function spawnEntityOnTable(entity) {
 }
 
 function spawnEntityAtHome(entity) {
+  if (!canManipulateEntity(entity)) {
+    // if we are not allowed to manipulate this entity,
+    // don't spawn a placeholder at home
+    return;
+  }
+  
   let index = entity.index;
   let homeLoc = config.entity_types[entity.type].homeLoc;
   let homeLocName = config.locations[homeLoc].refName;
@@ -78,7 +86,8 @@ function spawnEntityAtHome(entity) {
       // if we are the first in the stack
       $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
       + '<div class=\"num_box\"><span>0</span></div></div>');
-      $('#' + htmlID).css('background-image', 'url(' + file + ')');
+      
+      applyBGImage(htmlID, file, entity.type);
       
       $('#' + htmlID).css('display', 'none');
     }
@@ -96,13 +105,35 @@ function spawnEntityAtHome(entity) {
     
     $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
                             + '<div class=\"num_box\"></div></div>');
-                                                
-    $('#' + htmlID).css('background-image', 'url(' + file + ')');
+    
+    applyBGImage(htmlID, file, entity.type);
     
     if (entity.location == tableLoc)
       $('#' + htmlID).css('display', 'none');
   }
   
+}
+
+function applyBGImage(htmlID, file, type) {
+  let editable = config.entity_types[type].editable;
+  
+  if (editable) {
+    // if the image itself has any player-specific configurable parameters
+    
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+    if (rawFile.readyState === 4) {
+      if (rawFile.status === 200 || rawFile.status == 0) {
+        var allText = rawFile.responseText;
+          alert(allText);
+        }
+      }
+    }
+  } else {
+    // if not, just apply the file as a css background-image
+    $('#' + htmlID).css('background-image', 'url(' + file + ')');
+  }
 }
 
 function moveEntity(entity) {
@@ -175,4 +206,28 @@ function despawnAllEntities() {
 
 function getGridSpacing(entityType) {
   return config.entity_types[entityType].gridSpacing;
+}
+
+function canManipulateEntity(entity) {
+  let permission = config.entity_types[entity.type].permission;
+  
+  switch (permission) {
+    case 0:
+      return true;
+    case 1:
+    case 2:
+      if (entity.owner == playerInfo.id) {
+        return true;
+      } else {
+        return false;
+      }
+  }
+}
+
+function entityExistsOnTable(entity) {
+  if ($('#' + tableLoc + '_' + entity.id).length == 0) {
+    return false;
+  } else {
+    return true;
+  }
 }
