@@ -5,33 +5,55 @@ const dbFilePath = '../public/resources/json/entity_types.json';
 var rawData = fs.readFileSync(path.resolve(__dirname, dbFilePath));
 var config = JSON.parse(rawData);
 
-exports.loadDefaultGlobalEntities = function() {
-  let entities = {};
-  
+exports.appendDefaultGlobalEntities = function(entities) {
   for (let index in config.default_global_entities) {
+    let owner = config.default_entity_vars.owner;
     let id = config.default_global_entities[index];
     let entityType = config.entity_types[id];
-    let elements = config.entity_types[id].elements;
+    let multiplier = config.entity_types[id].multiplier;
     
-    loadEntities(entities, id, entityType, elements);
+    appendEntities(entities, owner, entityType, multiplier);
   }
-  
-  return entities;
 };
 
-function loadEntities(entities, id, entityType, elements) {
-  for (let i = 0; i < entityType.length * elements; i++) {
-    for (let j = 0; j < elements; j++) {
-      entities[entityType.type + '_' + i + '_' + j] = loadEntity(entityType, i, j);
-    }
+exports.appendDefaultPlayerEntities = function(entities, playerID) {
+  for (let index in config.default_player_entities) {
+    let id = config.default_player_entities[index];
+    let entityType = config.entity_types[id];
+    let multiplier = config.entity_types[id].multiplier;
+    
+    appendEntities(entities, playerID, entityType, multiplier);
   }
 }
 
-function loadEntity(entityType, i, j) {
+function appendEntities(entities, owner, entityType, multiplier) {
+  let type = entityType.type;
+  
+  if (config.metadata.entities[type] == undefined) {
+    config.metadata.entities[type] = {
+      currCount: 0,
+      currJ: 0
+    }
+  }
+  
+  let ct = config.metadata.entities[type].currCount + 1;
+  let jStart = config.metadata.entities[type].currJ;
+  
+  for (let i = 0; i < entityType.length; i++) {
+    for (let j = jStart; j < (multiplier + jStart); j++, ct++) {
+      entities[type + '_' + i + '_' + j] = loadEntity(owner, entityType, i, j, ct);
+    }
+  }
+  
+  config.metadata.entities[type].currCount = ct;
+  config.metadata.entities[type].currJ += multiplier;
+}
+
+function loadEntity(owner, entityType, i, j, ct) {
   let entity = {
     id: entityType.type + '_' + i + '_' + j,
     index: i,
-    position: (i * j) + j, // position of entity in the stack (if it can stack)
+    position: ct, // position of entity in the stack (if it can stack)
     element: j,
     type: entityType.type,
     x: config.default_entity_vars.x,
@@ -42,7 +64,7 @@ function loadEntity(entityType, i, j) {
     homeLoc: entityType.homeLoc,
     location: entityType.homeLoc, // spawn the entity at its home by default
     permission: entityType.permission,
-    owner: config.default_entity_vars.owner,
+    owner: owner,
     stateChange: true
   }
   
@@ -89,7 +111,7 @@ exports.getTableLoc = function() {
 
 exports.getTopEntityInStack = function(entities, type) {
   let length = config.entity_types[type].length;
-  let elements = config.entity_types[type].elements;
+  let multiplier = config.entity_types[type].multiplier;
   let topIndex = {
     val: length,
     i: 0,
@@ -97,7 +119,7 @@ exports.getTopEntityInStack = function(entities, type) {
   }
   
   for (let i = 0; i < length; i++) {
-    for (let j = 0; j < elements; j++) {
+    for (let j = 0; j < multiplier; j++) {
       let entity = entities[type + '_' + i + '_' + j];
       
       if (entity.location == entity.homeLoc || entity.location == 0) {

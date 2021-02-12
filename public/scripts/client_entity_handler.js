@@ -6,7 +6,7 @@ var targEnt = {
   location: -1, // location number
   type: -1, // type of entity number
   index: 0, // index of that entity type
-  elements: 0,
+  multiplier: 0,
   x: 0,
   y: 0,
   offsetX: 0,
@@ -23,10 +23,9 @@ const inventoryZIndex = 1001;
 /*
 listen for the state of the table from server
 */
-socket.on('load new entities', function(entities) {
+socket.on('append new entities', function(entities) {
   entitiesCache = entities;
   // before we load the new entities, despawn the current ones
-  despawnAllEntities();
   
   loadEntities(entities);
 });
@@ -37,11 +36,13 @@ socket.on('entity state', function(entities) {
     let loc = entity.location;
     
     if (targEnt.id != id || !targEnt.active) {
-      if (entitiesCache[id] != undefined) {
-        if (entitiesCache[id].location != loc) {
-          updateEntityLocation(entity);
-        }
+      // if we arent the one making the change to the entity
+      if (entitiesCache[id] != undefined && entitiesCache[id].location != loc) {
+        // if the location we have in the cache is different from the new info,
+        // update the entity location
+        updateEntityLocation(entity);
       }
+      
       if (!entityIsHome(entity)) {
         // if the location is on the table
         moveEntity(entity);
@@ -111,7 +112,7 @@ function setTargetEntity(evt) {
   targEnt.location = idParts[0];
   targEnt.type = idParts[1];
   targEnt.index = idParts[2];
-  targEnt.elements = idParts[3];
+  targEnt.multiplier = idParts[3];
 
   targEnt.offsetX = (evt.pageX - $(evt.target).offset().left) / zoomScale;
   targEnt.offsetY = (evt.pageY - $(evt.target).offset().top) / zoomScale;
