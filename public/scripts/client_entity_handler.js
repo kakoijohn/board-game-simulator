@@ -116,13 +116,13 @@ $(document).on('mousedown', '.item', function(evt) {
 $(document).on('mousedown', '.item svg', function(evt) {
   evt.stopImmediatePropagation();
   let id = $(this).closest('.item').attr('id');
-  simulateMousedownEvent('mousedown', id, evt);
+  simulateEvent('mousedown', id, evt);
 });
 
 $(document).on('mousedown', '.entity svg', function(evt) {
   evt.stopImmediatePropagation();
   let id = $(this).closest('.entity').attr('id');
-  simulateMousedownEvent('mousedown', id, evt);
+  simulateEvent('mousedown', id, evt);
 });
 
 $(document).on('dblclick', '.entity svg', function(evt) {
@@ -131,7 +131,7 @@ $(document).on('dblclick', '.entity svg', function(evt) {
   simulateEvent('dblclick', id, evt);
 });
 
-function simulateMousedownEvent(evtName, id, evt) {
+function simulateEvent(evtName, id, evt) {
   let simEvt = jQuery.Event(evtName);
   simEvt.which = evt.which;
   simEvt.pageX = evt.pageX;

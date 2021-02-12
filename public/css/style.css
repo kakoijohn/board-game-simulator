@@ -8,6 +8,7 @@
   
   --table-z-index: 1;
   --ui-z-index: 1000;
+  --player-icn-z-index: 1500;
   --login-z-index: 2000;
 }
 
@@ -270,6 +271,8 @@ body {
   pointer-events: none;
 
   -webkit-transform: translate3d(0,0,0);
+  
+  z-index: var(--player-icn-z-index);
 }
 
 .player_anim {

@@ -112,6 +112,10 @@ exports.getTopEntityInStack = function(entities, type) {
     return type + '_' + topIndex.i + '_' + topIndex.j;
 };
 
+exports.shuffleStack = function(entities, type) {
+  
+};
+
 exports.getPermissionLvl = function(type) {
   return config.entity_types[type].permission;
 }
