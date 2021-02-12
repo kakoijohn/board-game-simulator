@@ -65,7 +65,9 @@
       "editable": true,
       "editVars": {
         "fill": "%fillvar%",
-        "text": "%textvar%"
+        "text": "%textvar%",
+        "defFill": "red",
+        "defText": ""
       }
     }
   },

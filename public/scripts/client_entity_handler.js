@@ -84,7 +84,7 @@ $(document).on('mousedown', '.entity', function(evt) {
 	if (evt.which == 1) {
 		setTargetEntity(evt);
     
-    socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
+    socket.emit('pickup entity', {playerID: playerInfo.id, entityID: targEnt.id});
 	}
 });
 
@@ -94,15 +94,37 @@ $(document).on('mousedown', '.item', function(evt) {
     
     if (targEnt.index == 's') {
       socket.emit('pickup top entity on stack', {
-        username: playerInfo.username,
+        playerID: playerInfo.id,
         entityType: targEnt.type
       });
     } else {
-      socket.emit('pickup entity', {username: playerInfo.username, entityID: targEnt.id});
+      socket.emit('pickup entity', {playerID: playerInfo.id, entityID: targEnt.id});
     }
-    
   }
 });
+
+
+// fixes for events firing on the child instead of the parent element
+$(document).on('mousedown', '.item svg', function(evt) {
+  evt.stopImmediatePropagation();
+  let id = $(this).closest('.item').attr('id');
+  simulateMousedownEvent(id, evt);
+});
+
+$(document).on('mousedown', '.entity svg', function(evt) {
+  evt.stopImmediatePropagation();
+  let id = $(this).closest('.entity').attr('id');
+  simulateMousedownEvent(id, evt);
+});
+
+function simulateMousedownEvent(id, evt) {
+  let simEvt = jQuery.Event('mousedown');
+  simEvt.which = evt.which;
+  simEvt.pageX = evt.pageX;
+  simEvt.pageY = evt.pageY;
+  
+  $('#' + id).trigger(simEvt);
+}
 
 function setTargetEntity(evt) {
   let htmlID = $(evt.target).attr('id');
@@ -141,7 +163,7 @@ $(window).mousemove(function (evt) {
 		$('#' + htmlID).css('top', targEnt.y + 'px');
 		//next send the card state to the server.
 		socket.emit('move entity', {
-      username: playerInfo.username,
+      playerID: playerInfo.id,
       entityID: targEnt.id,
       x: targEnt.x,
       y: targEnt.y
@@ -154,7 +176,7 @@ $(window).mouseup(function(evt) {
   if (targEnt.active) {
     if (targEnt.isOverHome) {
       socket.emit('entity to home', {
-        username: playerInfo.id,
+        playerID: playerInfo.id,
         entityID: targEnt.id
       });
       

@@ -57,12 +57,11 @@ io.on('connection', function(socket) {
   	var id = username.replace(/[^a-zA-Z0-9]/g, '_');
     
     let userArr = username.split(' ');
-    let initials = '';
-    for (let index in userArr) {
-      if (index > 1)
-        break;
-      intials = initials + userArr[index].charAt(0).toUpperCase();
-    }
+    let initials = userArr[0].charAt(0).toUpperCase();
+    if (userArr.length > 1)
+      initials += userArr[userArr.length - 1].charAt(0).toUpperCase();
+    
+    console.log('initials: ' + initials);
 
   	if (players[id] == undefined) {
   		//create a new player if that username doesn't exist
@@ -84,18 +83,20 @@ io.on('connection', function(socket) {
       entityHandler.appendDefaultPlayerEntities(entities, id);
   	} else {
       console.log("Existing player reconnected with username: " + id);
+      
+      players[id].color = color;
+      players[id].username = username;
+      players[id].initials = initials;
     }
-
-  	players[id].color = color;
-
+    
   	//callback to client that we have put them into the system.
     socket.emit('new player confirmation', {username, id, color, currentWallpaper});
     //callback to the client with the state of all the entities on the board
     let simpEntities = entityHandler.getAllSimpEntities(entities);
 
     //tell all clients we have a new player and send a list of all the current players.
-    io.sockets.emit('append new entities', simpEntities);
     io.sockets.emit('new player notification', players);
+    io.sockets.emit('append new entities', simpEntities);
     
     playerStateChange = true;
     entityStateChange = true;
@@ -111,8 +112,8 @@ io.on('connection', function(socket) {
   });
   
   socket.on('pickup entity', function(info) {
-    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
-      if (userEntityPermission(info.username, info.entityID)) {
+    if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
+      if (userEntityPermission(info.playerID, info.entityID)) {
         entities[info.entityID].location = entityHandler.getTableLoc();
         entities[info.entityID].stateChange = true;
         entityStateChange = true;
@@ -123,10 +124,10 @@ io.on('connection', function(socket) {
   });
   
   socket.on('pickup top entity on stack', function(info) {
-    if (players[info.username] != undefined) {
+    if (players[info.playerID] != undefined) {
       let entityID = entityHandler.getTopEntityInStack(entities, info.entityType);
       
-      if (entityID != -1 && userEntityPermission(info.username, entityID)) {
+      if (entityID != -1 && userEntityPermission(info.playerID, entityID)) {
         entities[entityID].location = entityHandler.getTableLoc();
         entities[entityID].stateChange = true;
         entityStateChange = true;
@@ -137,8 +138,8 @@ io.on('connection', function(socket) {
   });
   
   socket.on('move entity', function(info) {
-    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
-      if (userEntityPermission(info.username, info.entityID)) {
+    if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
+      if (userEntityPermission(info.playerID, info.entityID)) {
         entities[info.entityID].x = info.x;
         entities[info.entityID].y = info.y;
         entities[info.entityID].stateChange = true;
@@ -149,8 +150,8 @@ io.on('connection', function(socket) {
   });
   
   socket.on('entity to home', function(info) {
-    if (entities[info.entityID] != undefined && players[info.username] != undefined) {
-      if (userEntityPermission(info.username, info.entityID)) {
+    if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
+      if (userEntityPermission(info.playerID, info.entityID)) {
         entities[info.entityID].location = entities[info.entityID].homeLoc;
         entities[info.entityID].stateChange = true;
         entityStateChange = true;
@@ -175,21 +176,21 @@ io.on('connection', function(socket) {
   });
 });
 
-function userEntityPermission(username, entityID) {
+function userEntityPermission(playerID, entityID) {
   switch (entities[entityID].permission) {
     case 0:
       // no permission restrictions
       return true;
     case 1:
       // admin required
-      if (players[username].isAdmin) {
+      if (players[playerID].isAdmin) {
         return true;
       } else {
         return false;
       }
     case 2:
       // belongs to player
-      if (entities[entityID].owner == username) {
+      if (entities[entityID].owner == playerID) {
         return true;
       } else {
         return false;

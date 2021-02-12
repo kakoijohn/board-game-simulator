@@ -1,4 +1,5 @@
 let config;
+let rawFileCache = {};
 let tableLoc = 1;
 // load the entity_types config file into json
 $(document).ready(function() {
@@ -42,7 +43,7 @@ function spawnEntityOnTable(entity) {
   let height = config.entity_types[entity.type].height;
   
   $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID +  '\"></div>');
-  applyBGImage(htmlID, (filePath + fileName), entity.type);
+  applyBGImage(htmlID, (filePath + fileName), entity.type, entity.owner);
   $('#' + htmlID).css('width',  width);
   $('#' + htmlID).css('height', height);
   $('#' + htmlID).css('left', entity.x + 'px');
@@ -87,7 +88,7 @@ function spawnEntityAtHome(entity) {
       $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
       + '<div class=\"num_box\"><span>0</span></div></div>');
       
-      applyBGImage(htmlID, file, entity.type);
+      applyBGImage(htmlID, file, entity.type, entity.owner);
       
       $('#' + htmlID).css('display', 'none');
     }
@@ -106,7 +107,7 @@ function spawnEntityAtHome(entity) {
     $('#' + homeLocName).append('<div class=\"item\" id=\"' + htmlID +  '\">'
                             + '<div class=\"num_box\"></div></div>');
     
-    applyBGImage(htmlID, file, entity.type);
+    applyBGImage(htmlID, file, entity.type, entity.owner);
     
     if (entity.location == tableLoc)
       $('#' + htmlID).css('display', 'none');
@@ -114,22 +115,35 @@ function spawnEntityAtHome(entity) {
   
 }
 
-function applyBGImage(htmlID, file, type) {
+function applyBGImage(htmlID, file, type, owner) {
   let editable = config.entity_types[type].editable;
+  let editVars = config.entity_types[type].editVars;
   
   if (editable) {
     // if the image itself has any player-specific configurable parameters
-    
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-    if (rawFile.readyState === 4) {
-      if (rawFile.status === 200 || rawFile.status == 0) {
-        var allText = rawFile.responseText;
-          alert(allText);
-        }
-      }
+    if (rawFileCache[file] == undefined) {
+      let rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.send(null);
+      rawFileCache[file] = rawFile.responseText;
     }
+    
+    let fileText = rawFileCache[file];
+    
+    let fillCol = '';
+    let entText = '';
+    if (owner == '') {
+      fillCol = editVars.defFill;
+      entText = editVars.defText;
+    } else {
+      fillCol = getPlayerColor(owner);
+      entText = getPlayerInitials(owner);
+    }
+    
+    fileText = fileText.replace(editVars.fill, fillCol);
+    fileText = fileText.replace(editVars.text, entText);
+    
+    $('#' + htmlID).append(fileText);
   } else {
     // if not, just apply the file as a css background-image
     $('#' + htmlID).css('background-image', 'url(' + file + ')');
