@@ -80,5 +80,5 @@ const disableScrollWheel = function() {
 }
 
 // attach handlers
-ele.addEventListener('wheel', zoom);
+ele.addEventListener('wheel', zoom, {passive: true});
 ele.onwheel = disableScrollWheel;

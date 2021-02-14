@@ -23,6 +23,8 @@ function loadEntities(entities) {
     if (!entityExistsOnTable(entity)) {
       // if this is a new entity to us, spawn it
       spawnNewEntity(entity);
+    } else {
+      updateEntity(entity);
     }
   }
 }
@@ -37,13 +39,12 @@ function spawnEntityOnTable(entity) {
   let locName = config.locations[tableLoc].refName;
   let homeLoc = config.entity_types[entity.type].homeLoc;
   let htmlID = tableLoc + '_' + entity.id;
-  let filePath = config.entity_types[entity.type].path;
-  let fileName = config.entity_types[entity.type].files[index];
+  let file = getEntityImageFile(entity.type, index, false);
   let width = config.entity_types[entity.type].width;
   let height = config.entity_types[entity.type].height;
 
   $('#' + locName).append('<div class=\"entity\" id=\"' + htmlID + '\"></div>');
-  applyBGImage(htmlID, (filePath + fileName), entity.type, entity.owner);
+  applyBGImage(htmlID, file, entity.type, entity.owner);
   $('#' + htmlID).css('width', width);
   $('#' + htmlID).css('height', height);
   $('#' + htmlID).css('left', entity.x + 'px');
@@ -65,19 +66,7 @@ function spawnEntityAtHome(entity) {
   let homeLocName = config.locations[homeLoc].refName;
   let htmlID = '';
 
-  let file = '';
-  let reversePath = config.entity_types[entity.type].reverse;
-  if (reversePath != undefined && reversePath != '') {
-    // if the entity has a reverse side, make the background image
-    // the reverse while it is at home.
-    file = reversePath;
-  } else {
-    // else make the background image the same as when its on the table
-    let filePath = config.entity_types[entity.type].path;
-    let fileName = config.entity_types[entity.type].files[index];
-
-    file = filePath + fileName;
-  }
+  let file = getEntityImageFile(entity.type, index, true);
 
   let canStack = config.entity_types[entity.type].canStack;
   if (canStack) {
@@ -115,39 +104,69 @@ function spawnEntityAtHome(entity) {
 
 }
 
+function updateEntity(entity) {
+  let canStack = config.entity_types[entity.type].canStack;
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  
+  let homeHtmlID = '';
+  if (canStack) {
+    homeHtmlID = homeLoc + '_' + entity.type + '_s'; // s for stack
+  } else {
+    homeHtmlID = homeLoc + '_' + entity.id;
+  }
+  
+  let tableHtmlID = tableLoc + '_' + entity.id;
+  
+  let homeFile  = getEntityImageFile(entity.type, entity.index, true);
+  let tableFile = getEntityImageFile(entity.type, entity.index, false);
+  
+  applyBGImage(homeHtmlID,  homeFile,  entity.type, entity.owner);
+  applyBGImage(tableHtmlID, tableFile, entity.type, entity.owner);
+}
+
 function applyBGImage(htmlID, file, type, owner) {
   let editable = config.entity_types[type].editable;
-  let editVars = config.entity_types[type].editVars;
 
   if (editable) {
     // if the image itself has any player-specific configurable parameters
+    // async request to load the file into memory
     if (rawFileCache[file] == undefined) {
       let rawFile = new XMLHttpRequest();
-      rawFile.open("GET", file, false);
+      rawFile.open("GET", file, true);
+      rawFile.onload = function(e) {
+        rawFileCache[file] = rawFile.responseText;
+        applyCustomImage(htmlID, owner, type, file);
+      }
       rawFile.send(null);
-      rawFileCache[file] = rawFile.responseText;
-    }
-
-    let fileText = rawFileCache[file];
-
-    let fillCol = '';
-    let entText = '';
-    if (owner == '') {
-      fillCol = editVars.defFill;
-      entText = editVars.defText;
     } else {
-      fillCol = getPlayerColor(owner);
-      entText = getPlayerInitials(owner);
+      applyCustomImage(htmlID, owner, type, file);
     }
-
-    fileText = fileText.replaceAll(editVars.fill, fillCol);
-    fileText = fileText.replaceAll(editVars.text, entText);
-
-    $('#' + htmlID).append(fileText);
   } else {
     // if not, just apply the file as a css background-image
     $('#' + htmlID).css('background-image', 'url(' + file + ')');
   }
+}
+
+function applyCustomImage(htmlID, owner, type, file) {
+  let fileText = rawFileCache[file];
+  
+  let editVars = config.entity_types[type].editVars;
+
+  let fillCol = '';
+  let entText = '';
+  
+  if (owner == '') {
+    fillCol = editVars.defFill;
+    entText = editVars.defText;
+  } else {
+    fillCol = getPlayerColor(owner);
+    entText = getPlayerInitials(owner);
+  }
+
+  fileText = fileText.replaceAll(editVars.fill, fillCol);
+  fileText = fileText.replaceAll(editVars.text, entText);
+
+  $('#' + htmlID).html(fileText);
 }
 
 function moveEntity(entity) {
@@ -245,6 +264,21 @@ function entityExistsOnTable(entity) {
     return false;
   } else {
     return true;
+  }
+}
+
+function getEntityImageFile(type, index, isHome) {
+  let reversePath = config.entity_types[type].reverse;
+  if (reversePath != undefined && reversePath != '' && isHome) {
+    // if the entity has a reverse side, make the background image
+    // the reverse while it is at home.
+    return reversePath;
+  } else {
+    // else make the background image the same as when its on the table
+    let filePath = config.entity_types[type].path;
+    let fileName = config.entity_types[type].files[index];
+
+    return filePath + fileName;
   }
 }
 
