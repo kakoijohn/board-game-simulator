@@ -27,6 +27,8 @@ server.listen(PORT, function() {
   
   console.log('generating default entities');
   entityHandler.appendDefaultGlobalEntities(entities);
+  console.log('shuffling tiles 400 times');
+  entityHandler.shuffleStack(entities, '0', 400);
 });
 
 var players = {};
@@ -76,6 +78,7 @@ io.on('connection', function(socket) {
         isAdmin: false,
         
   			color: color,
+        points: 0
   		};
       
       console.log("Adding new player with username: " + id);

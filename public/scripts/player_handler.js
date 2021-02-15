@@ -39,12 +39,17 @@ socket.on('new player notification', function(players) {
 			//we don't have a player by that id yet, create them on our game board.
 			$('#' + tableLoc).append("<div class=\"player player_anim\" id=\"" + player.id +
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
+											 
+		  $('#player_list').append("<li id=\"" + player.id + "_list" + "\">" +
+															 "<div class=\"name\"></div>|<div class=\"points\"></div></li>");
 
 			// $('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">"
       //                     + player.username + "<div class=\"player_cash\"></div></div>");
 			//
 			// $('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
 			// $('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
+			
+			
 		}
 
 		//toggle animation off for our cursor.
@@ -52,6 +57,11 @@ socket.on('new player notification', function(players) {
 			$('#' + player.id).toggleClass('player_anim', false);
 
 		$('#' + player.id).css('background-color', player.color);
+		
+		$('#' + player.id + '_list .name').html(player.username);
+		$('#' + player.id + '_list .name').css('background-color', player.color);
+		$('#' + player.id + '_list .points').html(player.points);
+		$('#' + player.id + '_list .points').css('background-color', player.color);
 		// $('#' + player.id + "_floating_nametag .player_cash").css('border-color', player.color);
 	}
 });

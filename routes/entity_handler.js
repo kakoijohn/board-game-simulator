@@ -112,8 +112,25 @@ exports.getTopEntityInStack = function(entities, type) {
     return type + '_' + topIndex.i + '_' + topIndex.j;
 };
 
-exports.shuffleStack = function(entities, type) {
+exports.shuffleStack = function(entities, type, iterations) {
+  let jLength = config.metadata.entities[type].currJ;
+  let iLength = config.entity_types[type].length;
   
+  for (let ct = 0; ct < iterations; ct++) {
+    let randJ1 = Math.floor(Math.random() * jLength);
+    let randJ2 = Math.floor(Math.random() * jLength);
+    
+    let randI1 = Math.floor(Math.random() * iLength);
+    let randI2 = Math.floor(Math.random() * iLength);
+    
+    let id1 = type + '_' + randI1 + '_' + randJ1;
+    let id2 = type + '_' + randI2 + '_' + randJ2;
+    
+    // swap
+    let tmpPos = entities[id1].position;
+    entities[id1].position = entities[id1].position;
+    entities[id2].position = tmpPos;
+  }
 };
 
 exports.getPermissionLvl = function(type) {

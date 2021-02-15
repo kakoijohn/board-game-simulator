@@ -16,7 +16,7 @@
   
   grid-template-areas:
     ". . . . . . . ."
-    ". . . . pinfo pinfo pinfo ."
+    ". . . . . pinfo pinfo ."
     ". . . . . . . ."
     ". inventory . backpack backpack . tools ."
     ". . . . . . . .";
@@ -212,10 +212,31 @@
 
 .player_info_container ul li {
   font-size: 120%;
-  
-  background-color: grey;
+  text-align: right;
+  float: right;
+  text-shadow: 1px 1px 0px white;
+  margin-bottom: 3px;
+  user-select: none;
 }
 
+.player_info_container ul li .name {
+  display: inline-block;
+  padding: 3px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: transparent;
+  user-select: none;
+}
+
+.player_info_container ul li .points {
+  display: inline-block;
+  text-align: center;
+  width: 25px;
+  padding: 3px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: transparent;
+}
 
 /* width */
 .inventory_scroll::-webkit-scrollbar {
