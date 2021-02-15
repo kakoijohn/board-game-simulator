@@ -16,7 +16,7 @@
   
   grid-template-areas:
     ". . . . . . . ."
-    ". . . . pinfo pinfo pinfo ."
+    ". . . pinfo pinfo pinfo pinfo ."
     ". . . . . . . ."
     ". inventory . backpack backpack . tools ."
     ". . . . . . . .";
@@ -33,10 +33,6 @@
   border-radius: 5px;
   
   user-select: none;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -o-user-select: none;
 }
 
 .inventory_area__active {
@@ -200,6 +196,7 @@
 
 .player_info_container {
   z-index: var(--ui-z-index);
+  pointer-events: none;
 }
 
 #player_info {
@@ -208,28 +205,47 @@
 
 .player_info_container ul {
   list-style: none;
+  user-select: none;
 }
 
 .player_info_container ul li {
   font-size: 120%;
   text-align: right;
-  float: right;
   text-shadow: 1px 1px 0px white;
   margin-bottom: 3px;
-  user-select: none;
+}
+
+.player_info_container ul li div {
+  display: inline-block;
+}
+
+.player_info_container ul li .plus-minus {
+  text-align: center;
+  height: 20px;
+  width: 20px;
+  margin: 1px;
+  border-radius: 5px;
+  background-color: var(--btn-color);
+  
+  pointer-events: auto;
+}
+
+.plus-minus--hidden {
+  display: none !important;
+}
+
+.player_info_container ul li .plus-minus:hover {
+  cursor: pointer;
 }
 
 .player_info_container ul li .name {
-  display: inline-block;
   padding: 3px;
   border-style: solid;
   border-radius: 5px;
   border-color: transparent;
-  user-select: none;
 }
 
 .player_info_container ul li .points {
-  display: inline-block;
   text-align: center;
   width: 25px;
   padding: 3px;

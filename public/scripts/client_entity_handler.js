@@ -16,10 +16,6 @@ var targEnt = {
   isOverHome: false,
 };
 
-const tableZIndex = 1;
-const activeZIndex = 999;
-const inventoryZIndex = 1001;
-
 /*
 listen for the state of the table from server
 */
@@ -62,6 +58,10 @@ socket.on('pickup stack confirm', function(entityID) {
   activateEntity(entityID);
 });
 
+socket.on('remove player entities', function(playerID) {
+  despawnPlayerEntities(entitiesCache, playerID);
+});
+
 function activateEntity(entityID) {
   targEnt.active = true;
   targEnt.gridSpacing = getGridSpacing(targEnt.type);
@@ -69,7 +69,6 @@ function activateEntity(entityID) {
     targEnt.id = entityID;
   
   let htmlID = targEnt.location + '_' + targEnt.id;
-  $('#' + htmlID).css('z-index', activeZIndex);
   
   if (entityIsHome(targEnt)) {
     targEnt.location = 1;

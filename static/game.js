@@ -152,25 +152,26 @@ var inMemCtx = inMemCanvas.getContext('2d');
 $(document).ready(function() {
 	initTouchHandler();
 
-	tableWidth = $('.table').width();
-	tableHeight = $('.table').height();
+	tableWidth = $('#table').width();
+	tableHeight = $('#table').height();
+  
+  $('#table_container').scrollLeft((tableWidth / 2) - 400); //TODO change this to
+  $('#table_container').scrollTop((tableHeight / 2) - 200); //actually be in middle of screen
 
-	canvas.width = tableWidth;
-	canvas.height = tableHeight;
+	// canvas.width = tableWidth;
+	// canvas.height = tableHeight;
 });
 
 $(window).resize(function() {
-	tableWidth = $('.table').width();
-	tableHeight = $('.table').height();
 
-	inMemCanvas.width = tableWidth;
-	inMemCanvas.height = tableHeight;
-	inMemCtx.drawImage(canvas, 0, 0, tableWidth, tableHeight);
+	// inMemCanvas.width = tableWidth;
+	// inMemCanvas.height = tableHeight;
+	// inMemCtx.drawImage(canvas, 0, 0, tableWidth, tableHeight);
 
-	canvas.width = tableWidth;
-	canvas.height = tableHeight;
+	// canvas.width = tableWidth;
+	// canvas.height = tableHeight;
 
-	ctx.drawImage(inMemCanvas, 0, 0);
+	// ctx.drawImage(inMemCanvas, 0, 0);
 });
 
 /**

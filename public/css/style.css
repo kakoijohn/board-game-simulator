@@ -3,8 +3,8 @@
   --secondary-color: steelblue;
   --btn-color: orange;
   
-  --table-width: 3000px;
-  --table-height: 3000px;
+  --table-width: 3100px;
+  --table-height: 3100px;
   
   --table-z-index: 1;
   --ui-z-index: 1000;
@@ -64,11 +64,10 @@ body {
   height: var(--table-height);
   width: var(--table-width);
   
-  background: url('/resources/backgrounds/table.svg');
+  background: url('/resources/backgrounds/table_v2.svg');
   background-size: 100%;
   background-position: contain;
   background-repeat: no-repeat;
-  
 
   margin: 0;
   padding: 0;
@@ -94,11 +93,11 @@ body {
 }
 
 .table__bg_0 {
-  background: url('/resources/backgrounds/table.svg');
+  background: url('/resources/backgrounds/table_v2.svg');
 }
 
 .table__bg_1 {
-  background: url('/resources/backgrounds/table.svg');
+  background: url('/resources/backgrounds/table_v2.svg');
 }
 
 #drawing_area {
@@ -133,130 +132,6 @@ body {
     top: 12vw;
   }
 }
-
-.card {
-  position: absolute;
-  width: 8vw;
-  height: 11.2vw;
-
-  background-color: transparent;
-
-  perspective: 1000px;
-
-  touch-action: none;
-}
-
-.card:hover {
-  cursor: grab;
-}
-
-.card:active {
-  cursor: grabbing;
-}
-
-.card_inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  border-radius: 0.9vw;
-  box-shadow: 0px 0px 0px 1px black;
-
-  background-size: cover !important;
-
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-.card_rotate_global {
-  transform: rotateY(180deg);
-}
-
-.card_rotate_local {
-  transform: rotateX(145deg);
-}
-
-.card_front, .card_back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
-}
-
-.card_front {
-  transform: rotateY(180deg);
-}
-
-.card_back {
-  background: url('/resources/cards/card_top_v3.svg');
-}
-
-.card_return_to_deck_anim {
-  transition: all 1s;
-}
-
-.chip {
-  position: absolute;
-  width: 5.6vw;
-  height: 5.6vw;
-
-  background-color: transparent;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-  z-index: 500;
-  /*perspective: 1000px;*/
-
-  border-radius: 5.6vw;
-
-  touch-action: none;
-
-  -webkit-transform: translate3d(0,0,0);
-}
-
-.chip:hover {
-  cursor: grab;
-}
-
-.chip:active {
-  cursor: grabbing;
-}
-
-.chip_100 {
-  background: url('/resources/chips/100_pokerchip.svg');
-}
-
-.chip_50 {
-  background: url('/resources/chips/50_pokerchip.svg');
-}
-
-.chip_25 {
-  background: url('/resources/chips/25_pokerchip.svg');
-}
-
-.chip_5 {
-  background: url('/resources/chips/5_pokerchip.svg');
-}
-
-.chip_1 {
-  background: url('/resources/chips/1_pokerchip.svg');
-}
-
-.deal_button input {
-  width: 2vw;
-}
-
-.deal_button label {
-  font-size: 1.25vw;
-}
-
-
 
 .player {
   position: absolute;

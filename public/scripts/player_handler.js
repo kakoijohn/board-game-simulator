@@ -9,10 +9,20 @@ var playerInfo = {
 
 let playersCache = {};
 
-socket.on('new player confirmation', function(newPlayer) {
-	playerInfo.username = newPlayer.username;
-	playerInfo.id = newPlayer.id;
-	playerInfo.color = newPlayer.color;
+$(window).mousemove(function (evt) {
+	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
+	
+	playerInfo.pointerX = scaledCoords.x;
+	playerInfo.pointerY = scaledCoords.y;
+
+	$('#' + playerInfo.id).css('left', playerInfo.pointerX);
+	$('#' + playerInfo.id).css('top', playerInfo.pointerY);
+
+	playerInfo.stateChanged = true;
+});
+
+socket.on('new player confirmation', function(player) {
+	playerInfo = player;
 
 	$('#pointer_icon').css('box-shadow', '0px 0px 0px 0.2vw ' + playerInfo.color);
 	cursorMode =  'pointer';
@@ -41,6 +51,8 @@ socket.on('new player notification', function(players) {
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
 											 
 		  $('#player_list').append("<li id=\"" + player.id + "_list" + "\">" +
+															 "<div id=\"" + player.id + "_minus\" class=\"plus-minus\">-</div>" +
+															 "<div id=\"" + player.id + "_plus\"  class=\"plus-minus\">+</div>" +
 															 "<div class=\"name\"></div>|<div class=\"points\"></div></li>");
 
 			// $('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">"
@@ -48,29 +60,29 @@ socket.on('new player notification', function(players) {
 			//
 			// $('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
 			// $('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
-			
-			
 		}
-
-		//toggle animation off for our cursor.
-		if (id == playerInfo.id)
-			$('#' + player.id).toggleClass('player_anim', false);
-
+		
 		$('#' + player.id).css('background-color', player.color);
 		
-		$('#' + player.id + '_list .name').html(player.username);
+		$('#' + player.id + '_list .name').text(player.username);
 		$('#' + player.id + '_list .name').css('background-color', player.color);
-		$('#' + player.id + '_list .points').html(player.points);
+		updatePlayerPoints(player.id, player.points);
 		$('#' + player.id + '_list .points').css('background-color', player.color);
 		// $('#' + player.id + "_floating_nametag .player_cash").css('border-color', player.color);
+		
+		//toggle animation off for our cursor.
+		if (id == playerInfo.id) {
+			$('#' + player.id).toggleClass('player_anim', false);
+		}
 	}
+	
+	updateAdminControls(playerInfo.isAdmin);
 });
 
-socket.on('remove user', function(username) {
-	if ($('#' + username).length != 0) {
-		$('#' + username).remove();
-		// $('#' + username + '_floating_nametag').remove();
-	}
+socket.on('remove user', function(playerID) {
+	$('#' + playerID).remove();
+	$('#' + playerID + '_list').remove();
+	// $('#' + username + '_floating_nametag').remove();
 });
 
 socket.on('player state', function(players) {
@@ -78,11 +90,22 @@ socket.on('player state', function(players) {
 		var player = players[id];
 		
 		if (id != playerInfo.id) {
-			//if not us we update everyone else's cursor on our screen
+			// if not us we update everyone else's cursor on our screen
 			$('#' + player.id).css('left', player.pointerX);
 			$('#' + player.id).css('top', player.pointerY);
+		} else {
+			// if this is us
+			if (player.isAdmin != playersCache[id].isAdmin) {
+				updateAdminControls(player.isAdmin);
+			}
+		}
+		
+		if (player.points != playersCache[id].points) {
+			updatePlayerPoints(player.id, player.points);
 		}
 	}
+	
+	playersCache = players;
 });
 
 function getPlayerColor(id) {
@@ -93,14 +116,16 @@ function getPlayerInitials(id) {
   return playersCache[id].initials;
 }
 
-$(window).mousemove(function (evt) {
-	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
-	
-	playerInfo.pointerX = scaledCoords.x;
-	playerInfo.pointerY = scaledCoords.y;
+function updatePlayerPoints(playerID, points) {
+	$('#' + playerID + '_list .points').text(points);
+}
 
-	$('#' + playerInfo.id).css('left', playerInfo.pointerX);
-	$('#' + playerInfo.id).css('top', playerInfo.pointerY);
-
-	playerInfo.stateChanged = true;
-});
+function updateAdminControls(isAdmin) {
+	if (isAdmin) {
+		// if we are given admin status
+		$('.plus-minus').toggleClass('plus-minus--hidden', false);
+	} else {
+		// if we are no longer admin
+		$('.plus-minus').toggleClass('plus-minus--hidden', true);
+	}
+}

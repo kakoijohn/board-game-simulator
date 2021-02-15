@@ -8,7 +8,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-var entityHandler = require("./routes/entity_handler");
+var entHand = require("./routes/entity_handler"); // entity handler
 var consoleCmds = require("./routes/console_commands");
 
 var PORT = process.env.PORT || 5000;
@@ -26,9 +26,9 @@ server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
   
   console.log('generating default entities');
-  entityHandler.appendDefaultGlobalEntities(entities);
+  entHand.appendDefaultGlobalEntities(entities);
   console.log('shuffling tiles 400 times');
-  entityHandler.shuffleStack(entities, '0', 400);
+  entHand.shuffleStack(entities, '0', 400);
 });
 
 var players = {};
@@ -83,7 +83,7 @@ io.on('connection', function(socket) {
       
       console.log("Adding new player with username: " + id);
       console.log("Adding new set of default player entities.");
-      entityHandler.appendDefaultPlayerEntities(entities, id);
+      entHand.appendDefaultPlayerEntities(entities, id);
   	} else {
       console.log("Existing player reconnected with username: " + id);
       
@@ -93,7 +93,7 @@ io.on('connection', function(socket) {
     }
     
   	//callback to client that we have put them into the system.
-    socket.emit('new player confirmation', {username, id, color, currentWallpaper});
+    socket.emit('new player confirmation', players[id]);
     //callback to the client with the state of all the entities on the board
 
     //tell all clients we have a new player and send a list of all the current players.
@@ -116,7 +116,7 @@ io.on('connection', function(socket) {
   socket.on('pickup entity', function(info) {
     if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
       if (userEntityPermission(info.playerID, info.entityID)) {
-        entities[info.entityID].location = entityHandler.getTableLoc();
+        entities[info.entityID].location = entHand.getTableLoc();
         entities[info.entityID].stateChange = true;
         entityStateChange = true;
         
@@ -130,8 +130,8 @@ io.on('connection', function(socket) {
       if (userEntityPermission(info.playerID, info.entityID)) {
         let type = entities[info.entityID].type;
         
-        if (entityHandler.canRotate(type)) {
-          entities[info.entityID].rotation += entityHandler.getRotStep(type);
+        if (entHand.canRotate(type)) {
+          entities[info.entityID].rotation += entHand.getRotStep(type);
           entities[info.entityID].stateChange = true;
           entityStateChange = true;
         }
@@ -141,10 +141,10 @@ io.on('connection', function(socket) {
   
   socket.on('pickup top entity on stack', function(info) {
     if (players[info.playerID] != undefined) {
-      let entityID = entityHandler.getTopEntityInStack(entities, info.entityType);
+      let entityID = entHand.getTopEntityInStack(entities, info.entityType);
       
       if (entityID != -1 && userEntityPermission(info.playerID, entityID)) {
-        entities[entityID].location = entityHandler.getTableLoc();
+        entities[entityID].location = entHand.getTableLoc();
         entities[entityID].stateChange = true;
         entityStateChange = true;
         
@@ -162,15 +162,24 @@ io.on('connection', function(socket) {
         entityStateChange = true;
       }
     }
-    
   });
   
   socket.on('entity to home', function(info) {
     if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
       if (userEntityPermission(info.playerID, info.entityID)) {
-        entities[info.entityID].location = entities[info.entityID].homeLoc;
+        let type = entities[info.entityID].type;
+        entities[info.entityID].location = entHand.getHomeLoc(type);
         entities[info.entityID].stateChange = true;
         entityStateChange = true;
+      }
+    }
+  });
+  
+  socket.on('update player points', function(info) {
+    if (players[info.sourceID] != undefined && players[info.playerID] != undefined) {
+      if (players[info.sourceID].isAdmin) {
+        players[info.playerID].points += info.delta;
+        playerStateChange = true;
       }
     }
   });
@@ -193,7 +202,7 @@ io.on('connection', function(socket) {
 });
 
 function userEntityPermission(playerID, entityID) {
-  switch (entityHandler.getPermissionLvl(entities[entityID].type)) {
+  switch (entHand.getPermissionLvl(entities[entityID].type)) {
     case 0:
       // no permission restrictions
       return true;
@@ -224,7 +233,7 @@ setInterval(function() {
     playerStateChange = false;
   }
   if (entityStateChange) {
-    let changedEntities = entityHandler.getChangedEntities(entities);
+    let changedEntities = entHand.getChangedEntities(entities);
     io.sockets.emit('entity state', changedEntities);
     entityStateChange = false;
   }
@@ -254,6 +263,7 @@ function consoleCallback(callback) {
   
   if (func == 'socket remove user') {
     io.sockets.emit('remove user', args.playerID);
+    io.sockets.emit('remove player entities', arge.playerID);
     delete players[args.playerID];
   } else if (func == 'socket reset server') {
     io.sockets.emit('reload page');

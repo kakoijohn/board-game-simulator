@@ -51,6 +51,24 @@ function deactivateHome() {
   $('#placeholder_item').remove();
 }
 
+$(document).on('click', '.plus-minus', function(evt) {
+  let idParts = $(evt.target).attr('id').split('_');
+  let playerID = idParts[0];
+  let plusMinus = idParts[1];
+  let delta = 0;
+  
+  if (plusMinus == 'plus') {
+    delta = 1;
+  } else {
+    delta = -1;
+  }
+  
+  socket.emit('update player points', {
+    sourceID: playerInfo.id,
+    playerID: playerID,
+    delta: delta
+  });
+});
 
 /**
 

@@ -144,3 +144,7 @@ exports.canRotate = function(type) {
 exports.getRotStep = function(type) {
   return config.entity_types[type].rotStep;
 }
+
+exports.getHomeLoc = function(type) {
+  return config.entity_types[type].homeLoc;
+}

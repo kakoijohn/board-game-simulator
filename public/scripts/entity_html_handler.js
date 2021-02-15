@@ -1,6 +1,8 @@
 let config;
 let rawFileCache = {};
 let tableLoc = 1;
+
+const activeZIndex = 999;
 // load the entity_types config file into json
 $(document).ready(function() {
   $.getJSON("resources/json/entity_types.json", function(json) {
@@ -174,6 +176,8 @@ function moveEntity(entity) {
   $('#' + tableLoc + '_' + entity.id).css('top', entity.y + 'px');
 
   $('#' + tableLoc + '_' + entity.id).css('transform', 'rotate(' + entity.rotation + 'deg)');
+  
+  updateEntityZIndex(tableLoc, entity);
 }
 
 // swap the entity from the table to the hand
@@ -183,6 +187,7 @@ function updateEntityLocation(entity) {
   if (location == tableLoc) {
     // if the location is the table, move it to home
     entityToTable(entity, homeLoc);
+    updateEntityZIndex(tableLoc, entity);
     if (config.entity_types[entity.type].canStack) {
       // if the entity is a stack, subtract one from the stack
       updateEntityStack(-1, entity.type, homeLoc);
@@ -221,6 +226,19 @@ function updateEntityStack(delta, entityType, homeLoc) {
   $('#' + htmlID + ' .num_box span').text(currStackTot + delta);
 }
 
+// TODO: make this more robust and actually bring things to front
+function updateEntityZIndex(location, entity) {
+  let htmlID = location + '_' + entity.id;
+  //
+  // let numEntities = $('.entity').length;
+  // currZct;
+  // $( "li" ).each(function( index ) {
+  //   console.log( index + ": " + $( this ).text() );
+  // });
+  
+  $('#' + htmlID).css('z-index', activeZIndex);
+}
+
 function entityIsHome(entity) {
   let location = entity.location;
   let homeLoc = config.entity_types[entity.type].homeLoc;
@@ -237,6 +255,19 @@ function entityIsOverHome(entity, source) {
 function despawnAllEntities() {
   $('.entity').remove();
   $('.item').remove();
+}
+
+function despawnPlayerEntities(entities, playerID) {
+  let homeLoc = config.entity_types[entity.type].homeLoc;
+  
+  for (let id in entities) {
+    let entity = entities[id];
+    
+    if (entity.owner == playerID) {
+      $('#' + tableLoc + '_' + entity.id).remove();
+      $('#' + homeLoc + '_' + entity.id).remove();
+    }
+  }
 }
 
 function getGridSpacing(entityType) {
