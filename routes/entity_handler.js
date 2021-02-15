@@ -135,6 +135,7 @@ exports.shuffleStack = function(entities, type, iterations) {
 
 exports.resetAllEntities = function(entities) {
   for (let id in entities) {
+    let type = entities[id].type;
     let homeLoc = config.entity_types[type].homeLoc;
     entities[id].location = homeLoc;
     entities[id].stateChange = true;
