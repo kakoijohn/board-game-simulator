@@ -28,7 +28,7 @@ server.listen(PORT, function() {
   console.log('generating default entities');
   entHand.appendDefaultGlobalEntities(entities);
   console.log('shuffling tiles 400 times');
-  entHand.shuffleStack(entities, '0', 400);
+  entHand.shuffleStack(entities, '0', 400); //TODO: make type param not hard coded
 });
 
 var players = {};
