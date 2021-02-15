@@ -5,6 +5,7 @@
 .ui_grid {
   display: grid;
   position: absolute;
+  touch-action: none;
   
   height: 100%;
   width: 100%;
