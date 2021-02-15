@@ -82,3 +82,12 @@ const disableScrollWheel = function() {
 // attach handlers
 ele.addEventListener('wheel', zoom, {passive: true});
 ele.onwheel = disableScrollWheel;
+
+function zoomByButton(delta) {
+  zoomScale -= (delta * zoomStep);
+  // set the zoom scale of the table
+  $('#table').css('transform', 'scale(' + zoomScale + ')');
+  
+  $('#table_spacer').css('width', (defaultWidth * zoomScale) + 'px');
+  $('#table_spacer').css('height', (defaultHeight * zoomScale) + 'px');
+}

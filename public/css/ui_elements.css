@@ -190,6 +190,13 @@
   background-image: url('/resources/icons/wallpaper.svg');
 }
 
+#minus_icon {
+  background-image: url('/resources/icons/magnify_minus.svg');
+}
+
+#plus_icon {
+  background-image: url('/resources/icons/magnify_plus.svg');
+}
 
 
 

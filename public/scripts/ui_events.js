@@ -20,6 +20,8 @@ $(document).on('mouseleave', '#ui_inventory', function(evt) {
   }
 });
 
+
+
 $(document).on('mouseenter', '#ui_backpack', function(evt) {
   if (targEnt.active && entityIsOverHome(targEnt, backpackIndex)) {
     targEnt.isOverHome = true;
@@ -37,6 +39,15 @@ $(document).on('mouseleave', '#ui_backpack', function(evt) {
   if (targEnt.isOverHome) {
     deactivateHome();
   }
+});
+
+$(document).on('touchenter', '.inventory_area', function(evt) {
+  let simEvt = jQuery.Event('mouseenter');
+  $('#' + $(evt.target).attr('id')).trigger(simEvt);
+});
+$(document).on('touchleave', '.inventory_area', function(evt) {
+  let simEvt = jQuery.Event('mouseleave');
+  $('#' + $(evt.target).attr('id')).trigger(simEvt);
 });
 
 function deactivateHome() {
@@ -126,4 +137,10 @@ $(document).on('click', '.terminal_exit', function(evt) {
 });
 $(document).on('click', '#wallpaper_icon', function(evt) {
   socket.emit('cycle wallpaper');
+});
+$(document).on('click', '#minus_icon', function(evt) {
+  zoomByButton(100);
+});
+$(document).on('click', '#plus_icon', function(evt) {
+  zoomByButton(-100);
 });
