@@ -16,7 +16,7 @@
   
   grid-template-areas:
     ". . . . . . . ."
-    ". . . . . pinfo pinfo ."
+    ". . . . pinfo pinfo pinfo ."
     ". . . . . . . ."
     ". inventory . backpack backpack . tools ."
     ". . . . . . . .";
