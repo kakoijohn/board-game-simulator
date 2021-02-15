@@ -19,8 +19,10 @@ function consolecmd(text, source, id, players) {
         response += 'id: ' + id + ', display name: ' + player.username + ', color:'
                     + player.color + ', is admin: ' + players.isAdmin + '\n';
       }
+    } else if (command[0] == 'newgame') {
+      callback.func = 'new game';
       
-      
+      response = "Starting a new game.";
     } else if (command[0] == 'removeuser' && command[1] != undefined) {
       var playerID = command[1];
       if (players[playerID] != undefined) {
@@ -31,14 +33,10 @@ function consolecmd(text, source, id, players) {
       } else {
         response = "Error: Invalid payout command. playerID not found.";
       }
-      
-      
     } else if (command[0] == 'resetserver') {
       callback.func = 'socket reset server';
       
       response = "Cleared all players from server and sent out refresh call to all clients.";
-      
-      
     } else if (command[0] == 'op' && command[1] != undefined) {
       // op command when the player initiating is already an admin, doesnt require password
       var playerID = command[1];
@@ -71,6 +69,8 @@ function consolecmd(text, source, id, players) {
       response = "List of Commands:" + '\n' +
       "listusers" + '\n' +
       "-- lists all the players currently on the server." + '\n' +
+      "newgame" + '\n' +
+      "-- starts a new game." + '\n' +
       "removeuser [playerID]" + '\n' +
       "-- removes the specified user from the server." + '\n' +
       "resetserver" + '\n' +

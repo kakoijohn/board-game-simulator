@@ -133,6 +133,14 @@ exports.shuffleStack = function(entities, type, iterations) {
   }
 };
 
+exports.resetAllEntities = function(entities) {
+  for (let id in entities) {
+    let homeLoc = config.entity_types[type].homeLoc;
+    entities[id].location = homeLoc;
+    entities[id].stateChange = true;
+  }
+}
+
 exports.getPermissionLvl = function(type) {
   return config.entity_types[type].permission;
 }

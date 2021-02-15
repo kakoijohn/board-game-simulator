@@ -261,7 +261,11 @@ function consoleCallback(callback) {
   let func = callback.func;
   let args = callback.args;
   
-  if (func == 'socket remove user') {
+  if (func == 'new game') {
+    entHand.resetAllEntities(entities);
+    entHand.shuffleStack(entities, '0', 400);
+    entityStateChange = true;
+  } else if (func == 'socket remove user') {
     io.sockets.emit('remove user', args.playerID);
     io.sockets.emit('remove player entities', arge.playerID);
     delete players[args.playerID];
