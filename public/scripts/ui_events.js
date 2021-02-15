@@ -20,8 +20,6 @@ $(document).on('mouseleave', '#ui_inventory', function(evt) {
   }
 });
 
-
-
 $(document).on('mouseenter', '#ui_backpack', function(evt) {
   if (targEnt.active && entityIsOverHome(targEnt, backpackIndex)) {
     targEnt.isOverHome = true;
