@@ -6,6 +6,7 @@
   width: 50vw;
   margin-left: 25vw;
   margin-top: 10vh;
+  white-space: nowrap;
   
   background-color: #292828;
   border-style: solid;

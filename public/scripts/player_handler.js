@@ -1,3 +1,9 @@
+/**
+
+Set up our player variables and send the data to the server.
+
+**/
+
 var playerInfo = {
 	username: 'null',
 	id: 'null',
@@ -9,17 +15,22 @@ var playerInfo = {
 
 let playersCache = {};
 
-$(window).mousemove(function (evt) {
-	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
-	
-	playerInfo.pointerX = scaledCoords.x;
-	playerInfo.pointerY = scaledCoords.y;
+//setup the user on the server
+var newPlayerCall;
 
-	$('#' + playerInfo.id).css('left', playerInfo.pointerX);
-	$('#' + playerInfo.id).css('top', playerInfo.pointerY);
+function newPlayerSubmit() {
+  var username = $('#dname').val();
+  var color = pickr.getColor().toHEXA().toString();
 
-	playerInfo.stateChanged = true;
-});
+  //let the server know we have a new player every 5 seconds until we receive a response.
+  socket.emit('new player', {username, color});
+  newPlayerCall = setInterval(function() {
+    socket.emit('new player', {username, color});
+  }, 5000);
+
+  //hide the form once we have submitted the info to the server
+  $('.display_name_form').css('display', 'none');
+}
 
 socket.on('new player confirmation', function(player) {
 	playerInfo = player;
@@ -35,6 +46,8 @@ socket.on('new player confirmation', function(player) {
   
   //set the current wallpaper
   // $('.table').addClass('table__bg_' + newPlayer.currentWallpaper);
+	
+	updateAdminControls(playerInfo.isAdmin);
 });
 
 socket.on('new player notification', function(players) {
@@ -51,15 +64,7 @@ socket.on('new player notification', function(players) {
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
 											 
 		  $('#player_list').append("<li id=\"" + player.id + "_list" + "\">" +
-															 "<div id=\"" + player.id + "_minus\" class=\"plus-minus\">-</div>" +
-															 "<div id=\"" + player.id + "_plus\"  class=\"plus-minus\">+</div>" +
 															 "<div class=\"name\"></div>|<div class=\"points\"></div></li>");
-
-			// $('.table').append("<div class=\"floating_nametag\" id=\"" + player.id + "_floating_nametag\">"
-      //                     + player.username + "<div class=\"player_cash\"></div></div>");
-			//
-			// $('#' + player.id + "_floating_nametag").css('left', player.nametagX + '%');
-			// $('#' + player.id + "_floating_nametag").css('top', player.nametagY + '%');
 		}
 		
 		$('#' + player.id).css('background-color', player.color);
@@ -94,10 +99,7 @@ socket.on('player state', function(players) {
 			$('#' + player.id).css('left', player.pointerX);
 			$('#' + player.id).css('top', player.pointerY);
 		} else {
-			// if this is us
-			if (player.isAdmin != playersCache[id].isAdmin) {
-				updateAdminControls(player.isAdmin);
-			}
+
 		}
 		
 		if (player.points != playersCache[id].points) {
@@ -106,6 +108,28 @@ socket.on('player state', function(players) {
 	}
 	
 	playersCache = players;
+});
+
+socket.on('update admins', function(players) {
+	for (let id in players) {
+		if (players[id].isAdmin)
+			updateAdminControls(true);
+		
+		if (id == playerInfo.id)
+			playerInfo = players[id];
+	}
+});
+
+$(window).mousemove(function (evt) {
+	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
+	
+	playerInfo.pointerX = scaledCoords.x;
+	playerInfo.pointerY = scaledCoords.y;
+
+	$('#' + playerInfo.id).css('left', playerInfo.pointerX);
+	$('#' + playerInfo.id).css('top', playerInfo.pointerY);
+
+	playerInfo.stateChanged = true;
 });
 
 function getPlayerColor(id) {
@@ -123,9 +147,9 @@ function updatePlayerPoints(playerID, points) {
 function updateAdminControls(isAdmin) {
 	if (isAdmin) {
 		// if we are given admin status
-		$('.plus-minus').toggleClass('plus-minus--hidden', false);
+		$('.pts-plus-minus').toggleClass('pts-plus-minus--hidden', false);
 	} else {
 		// if we are no longer admin
-		$('.plus-minus').toggleClass('plus-minus--hidden', true);
+		$('.pts-plus-minus').toggleClass('pts-plus-minus--hidden', true);
 	}
 }

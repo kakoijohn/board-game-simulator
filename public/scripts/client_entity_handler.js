@@ -160,7 +160,7 @@ $(window).mousemove(function (evt) {
     let tableMouseX = scaledCoords.x;
     let tableMouseY = scaledCoords.y;
     
-		targEnt.x = tableMouseX - targEnt.offsetX; //TODO offset
+		targEnt.x = tableMouseX - targEnt.offsetX;
 		targEnt.y = tableMouseY - targEnt.offsetY;
     
     if (targEnt.gridSpacing > 0 && !targEnt.isOverHome) {

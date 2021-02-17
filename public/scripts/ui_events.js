@@ -39,15 +39,6 @@ $(document).on('mouseleave', '#ui_backpack', function(evt) {
   }
 });
 
-$(document).on('touchenter', '.inventory_area', function(evt) {
-  let simEvt = jQuery.Event('mouseenter');
-  $('#' + $(evt.target).attr('id')).trigger(simEvt);
-});
-$(document).on('touchleave', '.inventory_area', function(evt) {
-  let simEvt = jQuery.Event('mouseleave');
-  $('#' + $(evt.target).attr('id')).trigger(simEvt);
-});
-
 function deactivateHome() {
   targEnt.isOverHome = false;
   
@@ -60,7 +51,7 @@ function deactivateHome() {
   $('#placeholder_item').remove();
 }
 
-$(document).on('click', '.plus-minus', function(evt) {
+$(document).on('click', '.pts-plus-minus', function(evt) {
   let idParts = $(evt.target).attr('id').split('_');
   let playerID = idParts[0];
   let plusMinus = idParts[1];
@@ -136,9 +127,9 @@ $(document).on('click', '.terminal_exit', function(evt) {
 $(document).on('click', '#wallpaper_icon', function(evt) {
   socket.emit('cycle wallpaper');
 });
-$(document).on('click', '#minus_icon', function(evt) {
+$(document).on('click', '#zoomout_icon', function(evt) {
   zoomByButton(100);
 });
-$(document).on('click', '#plus_icon', function(evt) {
+$(document).on('click', '#zoomin_icon', function(evt) {
   zoomByButton(-100);
 });

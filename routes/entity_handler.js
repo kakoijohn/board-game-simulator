@@ -24,7 +24,7 @@ exports.appendDefaultPlayerEntities = function(entities, playerID) {
     
     appendEntities(entities, playerID, entityType, multiplier);
   }
-}
+};
 
 function appendEntities(entities, owner, entityType, multiplier) {
   let type = entityType.type;
@@ -47,7 +47,7 @@ function appendEntities(entities, owner, entityType, multiplier) {
   
   config.metadata.entities[type].currCount = ct;
   config.metadata.entities[type].currJ += multiplier;
-}
+};
 
 function loadEntity(owner, entityType, i, j, ct) {
   let entity = {
@@ -65,7 +65,7 @@ function loadEntity(owner, entityType, i, j, ct) {
   }
   
   return entity;
-}
+};
 
 exports.getChangedEntities = function(entities) {
   let changedEntities = {};
@@ -133,6 +133,16 @@ exports.shuffleStack = function(entities, type, iterations) {
   }
 };
 
+exports.shuffleStacks = function(entities, iterations) {
+  for (let id in config.entity_types) {
+    if (config.entity_types[id].canStack) {
+      let type = config.entity_types[id].type;
+      
+      exports.shuffleStack(entities, type, iterations);
+    }
+  }
+};
+
 exports.resetAllEntities = function(entities) {
   for (let id in entities) {
     let type = entities[id].type;
@@ -140,20 +150,25 @@ exports.resetAllEntities = function(entities) {
     entities[id].location = homeLoc;
     entities[id].stateChange = true;
   }
-}
+};
+
+exports.clearAllEntities = function(entities) {
+  entities = {};
+  config.metadata.entities = {};
+};
 
 exports.getPermissionLvl = function(type) {
   return config.entity_types[type].permission;
-}
+};
 
 exports.canRotate = function(type) {
   return config.entity_types[type].canRotate;
-}
+};
 
 exports.getRotStep = function(type) {
   return config.entity_types[type].rotStep;
-}
+};
 
 exports.getHomeLoc = function(type) {
   return config.entity_types[type].homeLoc;
-}
+};

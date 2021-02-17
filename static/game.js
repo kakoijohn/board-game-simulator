@@ -15,14 +15,7 @@ socket.on('connect', function() {
   if (socketWasConnected) {
     despawnAllEntities();
 
-    var username = $('#dname').val();
-  	var color = $('#dcolor').val();
-
-  	//let the server know we have a new player every 5 seconds until we receive a response.
-  	socket.emit('new player', {username, color});
-  	newPlayerCall = setInterval(function() {
-  		socket.emit('new player', {username, color});
-  	}, 5000);
+    newPlayerSubmit();
 
     console.log("Re-established connection to server.");
     $('.disconnected_screen').css('display', 'none');
@@ -33,6 +26,20 @@ socket.on('disconnect', function() {
   console.log("Disconnected from server... Waiting for reconnect...");
   $('.disconnected_screen').css('display', 'block');
 });
+
+socket.on('reload page', function() {
+	location.reload();
+});
+
+$(document).on('click', '.name_submit_btn', function(evt) {
+  newPlayerSubmit();
+});
+
+$('#dname').keypress(function(event) {
+    if (event.keyCode == 13 || event.which == 13)
+        newPlayerSubmit();
+});
+
 
 //disable right click default function
 if (document.addEventListener) {
@@ -52,7 +59,9 @@ function touchHandler(event) {
         simulatedEvent.initMouseEvent({
         touchstart: "mousedown",
         touchmove: "mousemove",
-        touchend: "mouseup"
+        touchend: "mouseup",
+        touchenter: "mouseenter",
+        touchleave: "mouseleave"
     }[event.type], true, true, window, 1,
         touch.screenX, touch.screenY,
         touch.clientX, touch.clientY, false,
@@ -65,26 +74,9 @@ function initTouchHandler() {
     document.addEventListener("touchstart", touchHandler, true);
     document.addEventListener("touchmove", touchHandler, true);
     document.addEventListener("touchend", touchHandler, true);
-    document.addEventListener("touchcancel", touchHandler, true);
+    document.addEventListener("touchenter", touchHandler, true);
+    document.addEventListener("touchleave", touchHandler, true);
 }
-
-window.addEventListener('keydown', function(e) {
-  if(e.keyCode == 32 && e.target == document.body) {
-    e.preventDefault();
-  }
-  if(e.keyCode == 37 && e.target == document.body) {
-    e.preventDefault();
-  }
-  if(e.keyCode == 38 && e.target == document.body) {
-    e.preventDefault();
-  }
-  if(e.keyCode == 39 && e.target == document.body) {
-    e.preventDefault();
-  }
-  if(e.keyCode == 40 && e.target == document.body) {
-    e.preventDefault();
-  }
-});
 
 var randomStartingColor = 'rgb(' + (Math.floor(Math.random() * 256)) + ','
                + (Math.floor(Math.random() * 256)) + ','
@@ -174,47 +166,7 @@ $(window).resize(function() {
 	// ctx.drawImage(inMemCanvas, 0, 0);
 });
 
-/**
 
-Set up our player variables and send the data to the server.
-
-**/
-
-//setup the user on the server
-var newPlayerCall;
-
-function newPlayerSubmit() {
-  var username = $('#dname').val();
-  var color = pickr.getColor().toHEXA().toString();
-
-  //let the server know we have a new player every 5 seconds until we receive a response.
-  socket.emit('new player', {username, color});
-  newPlayerCall = setInterval(function() {
-    socket.emit('new player', {username, color});
-  }, 5000);
-
-  //hide the form once we have submitted the info to the server
-  $('.display_name_form').css('display', 'none');
-}
-
-$(document).on('click', '.name_submit_btn', function(evt) {
-  newPlayerSubmit();
-});
-
-$('#dname').keypress(function(event) {
-    if (event.keyCode == 13 || event.which == 13)
-        newPlayerSubmit();
-});
-$('#dcolor').keypress(function(event) {
-    if (event.keyCode == 13 || event.which == 13)
-        newPlayerSubmit();
-});
-
-
-
-socket.on('reload page', function() {
-	location.reload();
-});
 
 /**
 

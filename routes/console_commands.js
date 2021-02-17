@@ -9,15 +9,15 @@ function consolecmd(text, source, id, players) {
   var response = '';
   var callback = {
     func: '',
-    args: {},
+    args: {}
   }
 
   if (source == 'server' || (source == 'client' && players[id].isAdmin == true)) {
     if (command[0] == 'listusers') {
-      for (var id in players) {
-        let player = players[id];
-        response += 'id: ' + id + ', display name: ' + player.username + ', color:'
-                    + player.color + ', is admin: ' + players.isAdmin + '\n';
+      for (var id2 in players) {
+        let player = players[id2];
+        response += 'id: ' + id2 + ', display name: ' + player.username +
+                    ', color: ' + player.color + ', is admin: ' + player.isAdmin + '\n';
       }
     } else if (command[0] == 'newgame') {
       callback.func = 'new game';
@@ -104,9 +104,9 @@ function consolecmd(text, source, id, players) {
       
       
     } else if (command[0] == 'listusers') {
-      for (var id in players) {
-        let player = players[id];
-        response += 'id: ' + id + ', display name: ' + player.username +
+      for (var id2 in players) {
+        let player = players[id2];
+        response += 'id: ' + id2 + ', display name: ' + player.username +
                     ', color: ' + player.color + ', is admin: ' + player.isAdmin + '\n';
       }
       

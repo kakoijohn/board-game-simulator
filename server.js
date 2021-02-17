@@ -9,6 +9,7 @@ var server = http.Server(app);
 var io = socketIO(server);
 
 var entHand = require("./routes/entity_handler"); // entity handler
+var playHand = require("./routes/player_handler"); // player handler
 var consoleCmds = require("./routes/console_commands");
 
 var PORT = process.env.PORT || 5000;
@@ -25,22 +26,23 @@ app.get('/', function(request, response) {
 server.listen(PORT, function() {
   console.log('Starting server on port ' + PORT);
   
-  console.log('generating default entities');
-  entHand.appendDefaultGlobalEntities(entities);
-  console.log('shuffling tiles 400 times');
-  entHand.shuffleStack(entities, '0', 400); //TODO: make type param not hard coded
+  initializeObjects();
 });
 
 var players = {};
 var entities = {};
 
+function initializeObjects() {
+  console.log('generating default entities');
+  entHand.appendDefaultGlobalEntities(entities);
+  console.log('shuffling tiles 400 times');
+  entHand.shuffleStacks(entities, 400);
+}
+
 let playerStateChange = false;
 let entityStateChange = false;
 
 var currentWallpaper = 0; // 0 for default wallpaper
-
-const nametagStartX = 11;
-const nametagStartY = 114;
 
 io.on('connection', function(socket) {
 
@@ -56,7 +58,7 @@ io.on('connection', function(socket) {
                      + (Math.floor(Math.random() * 256)) + ','
                      + (Math.floor(Math.random() * 256)) + ')';
 
-  	var id = username.replace(/[^a-zA-Z0-9]/g, '_');
+  	var id = username.replace(/[^a-zA-Z0-9]/g, '-');
     
     let userArr = username.split(' ');
     let initials = userArr[0].charAt(0).toUpperCase();
@@ -73,8 +75,6 @@ io.on('connection', function(socket) {
         initials: initials,
   			pointerX: 0,
   			pointerY: 0,
-  			nametagX: nametagStartX,
-  			nametagY: nametagStartY,
         isAdmin: false,
         
   			color: color,
@@ -263,20 +263,19 @@ function consoleCallback(callback) {
   
   if (func == 'new game') {
     entHand.resetAllEntities(entities);
-    entHand.shuffleStack(entities, '0', 400);
+    entHand.shuffleStacks(entities, '0', 400);
     entityStateChange = true;
   } else if (func == 'socket remove user') {
     io.sockets.emit('remove user', args.playerID);
-    io.sockets.emit('remove player entities', arge.playerID);
+    io.sockets.emit('remove player entities', args.playerID);
     delete players[args.playerID];
   } else if (func == 'socket reset server') {
+    players = {};
+    entHand.clearAllEntities(entities);
+    initializeObjects();
     io.sockets.emit('reload page');
-    players = null;
   } else if (func == 'set admin') {
-    if (args.setAdmin) {
-      players[args.playerID].isAdmin = true;
-    } else {
-      players[args.playerID].isAdmin = false;
-    }
+    players[args.playerID].isAdmin = args.setAdmin;
+    io.sockets.emit('update admins', players);
   }
 }
