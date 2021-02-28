@@ -86,7 +86,6 @@
     "rotation": 0,
     "location": 0,
     "owner": "",
-    "stateChange": false
   },
   "default_global_entities": [
     0,1
