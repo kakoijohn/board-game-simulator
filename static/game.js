@@ -219,24 +219,7 @@ $(window).mouseup(function(evt) {
 	}
 });
 
-/**
 
-send our player state to the server
-
-**/
-
-//emit the player position 24 times per second
-setInterval(function() {
-	//only emit the player state if we have received an id from the server.
-	if (playerInfo.username != 'null') {
-    // only send info to the server if the state has actually changed
-		if (playerInfo.stateChanged) {
-			socket.emit('broadcast player state', playerInfo);
-			playerInfo.stateChanged = false;
-		}
-    
-	}
-}, 1000 / 24);
 
 /**
 

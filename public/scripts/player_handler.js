@@ -64,12 +64,14 @@ socket.on('new player notification', function(players) {
                        "\"><div class=\"nametag\">" + player.username + "</div></div>");
 											 
 		  $('#player_list').append("<li id=\"" + player.id + "_list" + "\">" +
-															 "<div class=\"name\"></div>|<div class=\"points\"></div></li>");
+															 "<div class=\"name\"><span></span>" +
+															 "</div>|<div class=\"points\">" +
+															 "<span></span></div></li>");
 		}
 		
 		$('#' + player.id).css('background-color', player.color);
 		
-		$('#' + player.id + '_list .name').text(player.username);
+		$('#' + player.id + '_list .name span').text(player.username);
 		$('#' + player.id + '_list .name').css('background-color', player.color);
 		updatePlayerPoints(player.id, player.points);
 		$('#' + player.id + '_list .points').css('background-color', player.color);
@@ -120,6 +122,27 @@ socket.on('update admins', function(players) {
 	}
 });
 
+
+/**
+
+send our player state to the server
+
+**/
+
+//emit the player position 24 times per second
+setInterval(function() {
+	//only emit the player state if we have received an id from the server.
+	if (playerInfo.username != 'null') {
+    // only send info to the server if the state has actually changed
+		if (playerInfo.stateChanged) {
+			socket.emit('broadcast player state', playerInfo);
+			playerInfo.stateChanged = false;
+		}
+    
+	}
+}, 1000 / 12);
+
+
 $(window).mousemove(function (evt) {
 	let scaledCoords = convertWindowCoordToScale(evt.pageX, evt.pageY);
 	
@@ -141,7 +164,7 @@ function getPlayerInitials(id) {
 }
 
 function updatePlayerPoints(playerID, points) {
-	$('#' + playerID + '_list .points').text(points);
+	$('#' + playerID + '_list .points span').text(points);
 }
 
 function updateAdminControls(isAdmin) {

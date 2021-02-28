@@ -220,7 +220,6 @@
 .player_info_container ul li {
   font-size: 120%;
   text-align: right;
-  text-shadow: 1px 1px 0px white;
   margin-bottom: 3px;
 }
 
@@ -261,6 +260,11 @@
   border-style: solid;
   border-radius: 5px;
   border-color: transparent;
+}
+
+.player_info_container ul li span {
+  color: white;
+  mix-blend-mode: difference;
 }
 
 /* width */

@@ -173,18 +173,47 @@ $(window).mousemove(function (evt) {
 		//move the card locally on our screen before sending the data to the server.
 		$('#' + htmlID).css('left', targEnt.x + 'px');
 		$('#' + htmlID).css('top', targEnt.y + 'px');
-		//next send the card state to the server.
-		socket.emit('move entity', {
-      playerID: playerInfo.id,
-      entityID: targEnt.id,
-      x: targEnt.x,
-      y: targEnt.y
-    });
-
 	}
 });
 
-//
+$(window).mouseup(function(evt) {
+  if (targEnt.active) {
+    targEnt.active = false;
+    
+    if (targEnt.isOverHome) {
+      socket.emit('entity to home', {
+        playerID: playerInfo.id,
+        entityID: targEnt.id
+      });
+      
+      deactivateHome();
+    }
+  }
+});
+
+/**
+
+send our player state to the server
+
+**/
+
+//emit the player position 24 times per second
+setInterval(function() {
+	//only emit the player state if we have received an id from the server.
+	if (playerInfo.id != 'null') {
+    // only send info to the server if we have an active entity
+		if (targEnt.active) {
+      //next send the card state to the server.
+      socket.emit('move entity', {
+        playerID: playerInfo.id,
+        entityID: targEnt.id,
+        x: targEnt.x,
+        y: targEnt.y
+      });
+		}
+	}
+}, 1000 / 12);
+
 
 /**
  * convertCoordToScale - scales the given window coordinates to the current scale
@@ -203,17 +232,3 @@ function convertWindowCoordToScale(x, y) {
   
   return {x: scaleX, y: scaleY};
 }
-
-$(window).mouseup(function(evt) {
-  if (targEnt.active) {
-    if (targEnt.isOverHome) {
-      socket.emit('entity to home', {
-        playerID: playerInfo.id,
-        entityID: targEnt.id
-      });
-      
-      deactivateHome();
-    }
-    targEnt.active = false;
-  }
-});
