@@ -60,23 +60,24 @@ function loadEntity(owner, entityType, i, j, ct) {
     y: config.default_entity_vars.y,
     rotation: config.default_entity_vars.rotation,
     location: entityType.homeLoc, // spawn the entity at its home by default
-    owner: owner,
-    stateChange: true
+    owner: owner
   }
   
   return entity;
 };
 
+let changedEntities = {};
+
+exports.addChangedEntity = function(entity) {
+  changedEntities[entity.id] = entity;
+};
+
 exports.getChangedEntities = function(entities) {
-  let changedEntities = {};
-  for (let id in entities) {
-    if (entities[id].stateChange) {
-      changedEntities[id] = entities[id];
-      entities[id].stateChange = false;
-    }
-  }
-  
   return changedEntities;
+};
+
+exports.clearChangedEntities = function() {
+  changedEntities = {};
 };
 
 exports.getTableLoc = function() {
@@ -148,7 +149,7 @@ exports.resetAllEntities = function(entities) {
     let type = entities[id].type;
     let homeLoc = config.entity_types[type].homeLoc;
     entities[id].location = homeLoc;
-    entities[id].stateChange = true;
+    exports.addChangedEntity(entities[id]);
   }
 };
 

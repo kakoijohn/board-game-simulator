@@ -117,7 +117,7 @@ io.on('connection', function(socket) {
     if (entities[info.entityID] != undefined && players[info.playerID] != undefined) {
       if (userEntityPermission(info.playerID, info.entityID)) {
         entities[info.entityID].location = entHand.getTableLoc();
-        entities[info.entityID].stateChange = true;
+        entHand.addChangedEntity(entities[info.entityID]);
         entityStateChange = true;
         
         socket.emit('pickup entity confirm');
@@ -132,7 +132,7 @@ io.on('connection', function(socket) {
         
         if (entHand.canRotate(type)) {
           entities[info.entityID].rotation += entHand.getRotStep(type);
-          entities[info.entityID].stateChange = true;
+          entHand.addChangedEntity(entities[info.entityID]);
           entityStateChange = true;
         }
       }
@@ -145,7 +145,7 @@ io.on('connection', function(socket) {
       
       if (entityID != -1 && userEntityPermission(info.playerID, entityID)) {
         entities[entityID].location = entHand.getTableLoc();
-        entities[entityID].stateChange = true;
+        entHand.addChangedEntity(entities[entityID]);
         entityStateChange = true;
         
         socket.emit('pickup stack confirm', entityID);
@@ -158,7 +158,7 @@ io.on('connection', function(socket) {
       if (userEntityPermission(info.playerID, info.entityID)) {
         entities[info.entityID].x = info.x;
         entities[info.entityID].y = info.y;
-        entities[info.entityID].stateChange = true;
+        entHand.addChangedEntity(entities[info.entityID]);
         entityStateChange = true;
       }
     }
@@ -169,7 +169,7 @@ io.on('connection', function(socket) {
       if (userEntityPermission(info.playerID, info.entityID)) {
         let type = entities[info.entityID].type;
         entities[info.entityID].location = entHand.getHomeLoc(type);
-        entities[info.entityID].stateChange = true;
+        entHand.addChangedEntity(entities[info.entityID]);
         entityStateChange = true;
       }
     }
@@ -236,6 +236,7 @@ setInterval(function() {
     let changedEntities = entHand.getChangedEntities(entities);
     io.sockets.emit('entity state', changedEntities);
     entityStateChange = false;
+    entHand.clearChangedEntities();
   }
 }, 1000 / 24);
 
