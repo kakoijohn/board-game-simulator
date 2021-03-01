@@ -97,7 +97,9 @@ exports.getTopEntityInStack = function(entities, type) {
     for (let j = 0; j < multiplier; j++) {
       let entity = entities[type + '_' + i + '_' + j];
       
-      if (entity.location == config.entity_types[type].homeLoc || entity.location == 0) {
+      if (entity.location == config.entity_types[type].homeLoc ||
+          entity.location == 0) {
+        
         if (entity.position < topIndex.val) {
           topIndex.val = entity.position;
           topIndex.i = i;

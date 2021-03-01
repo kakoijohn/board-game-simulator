@@ -11,7 +11,7 @@ var playerInfo = {
 	pointerY: 0,
 	color: 'null',
 	stateChanged: false
-}
+};
 
 let playersCache = {};
 
@@ -22,7 +22,8 @@ function newPlayerSubmit() {
   var username = $('#dname').val();
   var color = pickr.getColor().toHEXA().toString();
 
-  //let the server know we have a new player every 5 seconds until we receive a response.
+  //let the server know we have a new player
+	//every 5 seconds until we receive a response.
   socket.emit('new player', {username, color});
   newPlayerCall = setInterval(function() {
     socket.emit('new player', {username, color});
@@ -75,7 +76,6 @@ socket.on('new player notification', function(players) {
 		$('#' + player.id + '_list .name').css('background-color', player.color);
 		updatePlayerPoints(player.id, player.points);
 		$('#' + player.id + '_list .points').css('background-color', player.color);
-		// $('#' + player.id + "_floating_nametag .player_cash").css('border-color', player.color);
 		
 		//toggle animation off for our cursor.
 		if (id == playerInfo.id) {

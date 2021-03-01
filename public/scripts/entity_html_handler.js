@@ -175,7 +175,10 @@ function moveEntity(entity) {
   $('#' + tableLoc + '_' + entity.id).css('left', entity.x + 'px');
   $('#' + tableLoc + '_' + entity.id).css('top', entity.y + 'px');
 
-  $('#' + tableLoc + '_' + entity.id).css('transform', 'rotate(' + entity.rotation + 'deg)');
+  $('#' + tableLoc + '_' + entity.id).css(
+    'transform',
+    'rotate(' + entity.rotation + 'deg)'
+  );
   
   updateEntityZIndex(tableLoc, entity);
 }

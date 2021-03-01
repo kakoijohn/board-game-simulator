@@ -105,7 +105,10 @@ $(document).on('mousedown', '.item', function(evt) {
         entityType: targEnt.type
       });
     } else {
-      socket.emit('pickup entity', {playerID: playerInfo.id, entityID: targEnt.id});
+      socket.emit('pickup entity', {
+        playerID: playerInfo.id,
+        entityID: targEnt.id
+      });
     }
   }
 });

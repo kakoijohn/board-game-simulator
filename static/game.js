@@ -147,8 +147,10 @@ $(document).ready(function() {
 	tableWidth = $('#table').width();
 	tableHeight = $('#table').height();
   
-  $('#table_container').scrollLeft((tableWidth / 2) - 400); //TODO change this to
-  $('#table_container').scrollTop((tableHeight / 2) - 200); //actually be in middle of screen
+  $('#table_container').scrollLeft((tableWidth / 2) - 400);
+  $('#table_container').scrollTop((tableHeight / 2) - 200);
+  //TODO change this to
+  //actually be in middle of screen
 
 	// canvas.width = tableWidth;
 	// canvas.height = tableHeight;
@@ -261,20 +263,9 @@ function drawOnCanvas(data) {
 	ctx.closePath();
 }
 
-
-function drawExplosionOnCanvas(data) {
-  // ctx.drawImage(craterSprite, (data.x / 100) * canvas.width, (data.y / 100) * canvas.height,
-  //                             (2.5 / 100) * canvas.width, (5 / 100) * canvas.height);
-}
-
 socket.on('new draw line', function(data) {
 	//if not us we draw the line from the other user.
-	if (data.playerID != playerInfo.username)
-		drawOnCanvas(data);
-});
-
-socket.on('draw new explosion', function(data) {
-  drawExplosionOnCanvas(data);
+	
 });
 
 socket.on('clear draw area', function() {
